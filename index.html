@@ -1174,42 +1174,6 @@
         if (el) el.innerHTML = svgStr;
       });
 
-      // Also render PNG to canvas for Apple Touch Icon & PNG download
-      const canvas = document.getElementById('favicon-canvas');
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-        img.onload = function() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          try {
-            const pngUrl = canvas.toDataURL('image/png');
-            const linkPng = document.getElementById('favicon-png');
-            const linkApple = document.getElementById('apple-touch-icon');
-            if (linkPng) linkPng.href = pngUrl;
-            if (linkApple) linkApple.href = pngUrl;
-          } catch (e) {}
-        };
-        img.src = encodedSvg;
-      }
-    }
-
-    function downloadFaviconAsset(format, size) {
-      const svgStr = buildFaviconSvgString(currentFaviconTheme);
-      if (format === 'svg') {
-        const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `candy-crepes-favicon-${currentFaviconTheme}.svg`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showToast('Favicon SVG Diunduh!', 'File vector favicon.svg siap dipasang di web.');
-        return;
-      }
-
       const canvas = document.createElement('canvas');
       canvas.width = size;
       canvas.height = size;
