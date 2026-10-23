@@ -6,6 +6,10 @@
   <meta name="theme-color" content="#581c87">
   <title>Portal Kasir & Laporan Penjualan — Candy Crepes Mbak Pie</title>
 
+  <!-- Mascot Crepe Favicon -->
+  <link id="favicon-svg" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236b21a8'/%3E%3Cstop offset='100%25' stop-color='%233b0764'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23bg)'/%3E%3Crect x='6' y='6' width='108' height='108' rx='23' fill='none' stroke='%23facc15' stroke-width='4'/%3E%3Cpath d='M60 102 L22 38 Q60 22 98 38 Z' fill='%23fde047' stroke='%23a16207' stroke-width='3.5' stroke-linejoin='round'/%3E%3Cpath d='M60 102 L60 30 Q79 29 98 38 Z' fill='%23eab308' opacity='0.35'/%3E%3Cpath d='M27 40 Q38 52 46 43 Q54 55 62 43 Q70 55 78 44 Q86 53 93 40 Q60 28 27 40 Z' fill='%23451a03'/%3E%3Ccircle cx='60' cy='31' r='14' fill='%23ffffff' stroke='%23e2e8f0' stroke-width='2'/%3E%3Ccircle cx='52' cy='34' r='9' fill='%23ffffff'/%3E%3Ccircle cx='68' cy='34' r='9' fill='%23ffffff'/%3E%3Ccircle cx='64' cy='21' r='7.5' fill='%23ef4444' stroke='%23991b1b' stroke-width='2'/%3E%3Cpath d='M66 14 Q73 8 78 11' stroke='%23991b1b' stroke-width='2.5' stroke-linecap='round' fill='none'/%3E%3Cpath d='M42 62 Q47 56 52 62' stroke='%233b0764' stroke-width='4' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='72' cy='60' r='6' fill='%233b0764'/%3E%3Ccircle cx='70' cy='58' r='2.2' fill='%23ffffff'/%3E%3Cellipse cx='41' cy='69' rx='5.5' ry='3.2' fill='%23f43f5e' opacity='0.75'/%3E%3Cellipse cx='77' cy='69' rx='5.5' ry='3.2' fill='%23f43f5e' opacity='0.75'/%3E%3Cpath d='M54 68 Q60 76 66 68' stroke='%233b0764' stroke-width='3.8' stroke-linecap='round' fill='%23f43f5e'/%3E%3Crect x='34' y='48' width='7' height='3' rx='1.5' transform='rotate(-25 34 48)' fill='%2338bdf8'/%3E%3Crect x='78' y='74' width='7' height='3' rx='1.5' transform='rotate(20 78 74)' fill='%23f472b6'/%3E%3Crect x='55' y='83' width='7' height='3' rx='1.5' transform='rotate(-15 55 83)' fill='%234ade80'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236b21a8'/%3E%3Cstop offset='100%25' stop-color='%233b0764'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23bg)'/%3E%3Crect x='6' y='6' width='108' height='108' rx='23' fill='none' stroke='%23facc15' stroke-width='4'/%3E%3Cpath d='M60 102 L22 38 Q60 22 98 38 Z' fill='%23fde047' stroke='%23a16207' stroke-width='3.5' stroke-linejoin='round'/%3E%3C/svg%3E">
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -159,14 +163,18 @@
           </button>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" id="open-sheets-modal-btn" class="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-sm">
+            <span>📊</span>
+            <span>Google Sheets</span>
+          </button>
           <button type="button" id="send-wa-report-btn" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-sm">
             <span>📲</span>
-            <span>Kirim Rekap ke WA</span>
+            <span>Kirim Rekap WA</span>
           </button>
           <button type="button" id="download-csv-btn" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-sm">
             <span>📥</span>
-            <span>Unduh Excel (CSV)</span>
+            <span>Unduh CSV</span>
           </button>
         </div>
       </div>
@@ -436,6 +444,100 @@
     </div>
   </div>
 
+
+  <!-- ==================== GOOGLE SHEETS INTEGRATION MODAL ==================== -->
+  <div id="google-sheets-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[75] hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-emerald-200 p-6 space-y-5">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl font-bold">
+            📊
+          </div>
+          <div>
+            <h3 class="font-display font-bold text-lg text-slate-900">Integrasi Google Sheets</h3>
+            <p class="text-xs text-slate-500">Melihat &amp; mencatat seluruh penjualan Candy Crepes di Spreadsheet</p>
+          </div>
+        </div>
+        <button type="button" id="close-sheets-modal-btn" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl">✕</button>
+      </div>
+
+      <!-- Quick Actions (Copy Table / Open Sheet) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <button type="button" id="copy-sheets-clipboard-btn" class="p-3.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-left transition flex items-center gap-3">
+          <span class="text-2xl">📋</span>
+          <div>
+            <span class="font-bold text-xs text-emerald-950 block">Salin Data untuk Google Sheets</span>
+            <span class="text-[11px] text-slate-500">Buka Sheets kosong lalu tekan Ctrl+V (Paste)</span>
+          </div>
+        </button>
+
+        <a id="open-sheets-link-btn" href="https://docs.google.com/spreadsheets" target="_blank" rel="noopener noreferrer" class="p-3.5 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-left transition flex items-center gap-3">
+          <span class="text-2xl">🔗</span>
+          <div>
+            <span class="font-bold text-xs text-indigo-950 block">Buka Spreadsheet Google Sheets</span>
+            <span class="text-[11px] text-slate-500" id="sheets-link-subtitle">Buka lembar kerja di tab baru</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Live Webhook Auto Sync Section -->
+      <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="font-bold text-xs text-slate-800 flex items-center gap-1.5">
+            <span>⚡</span>
+            <span>Sinkronisasi Otomatis (Google Apps Script Webhook)</span>
+          </h4>
+          <span id="webhook-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">Belum Terhubung</span>
+        </div>
+
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Setiap kali transaksi baru dicatat, sistem dapat otomatis mengirimkan baris baru ke Google Sheets tanpa perlu input ulang!
+        </p>
+
+        <div class="space-y-2">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Link Spreadsheet Kamu (Opsional):</label>
+            <input type="url" id="sheet-url-input" placeholder="https://docs.google.com/spreadsheets/d/..." class="w-full text-xs p-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">URL Webhook Google Apps Script (Opsional):</label>
+            <input type="url" id="sheet-webhook-input" placeholder="https://script.google.com/macros/s/.../exec" class="w-full text-xs p-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-none">
+          </div>
+          <div class="flex flex-wrap justify-between items-center gap-2 pt-1">
+            <button type="button" id="save-sheets-config-btn" class="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow transition">
+              💾 Simpan Pengaturan
+            </button>
+            <button type="button" id="sync-all-to-sheets-btn" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow transition flex items-center gap-1.5">
+              <span>⚡</span>
+              <span>Kirim Semua Data Sekarang</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick 1-Minute Guide & Apps Script Code -->
+      <div class="border border-slate-200 rounded-2xl p-4 bg-white space-y-2.5">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-xs text-slate-800">📖 Panduan 1 Menit Buat Webhook Sheets:</span>
+          <button type="button" id="copy-script-code-btn" class="text-xs text-emerald-700 font-bold hover:underline flex items-center gap-1">
+            <span>📋</span>
+            <span>Salin Kode Apps Script</span>
+          </button>
+        </div>
+        <ol class="text-[11px] text-slate-600 list-decimal list-inside space-y-1 leading-relaxed">
+          <li>Buka Google Sheets baru di Google Drive (beri judul misal <em>Pembukuan Candy Crepes</em>).</li>
+          <li>Klik menu <strong>Extensions (Ekstensi) → Apps Script</strong>.</li>
+          <li>Hapus kode bawaan, lalu paste kode yang telah disalin dari tombol di atas.</li>
+          <li>Klik <strong>Deploy → New deployment → Web app</strong> (pilih Who has access: <em>Anyone / Siapa saja</em>).</li>
+          <li>Salin URL Web App yang muncul, lalu paste ke kolom URL Webhook di atas. Selesai!</li>
+        </ol>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div id="owner-toast" class="fixed top-5 right-5 z-[9999] hidden flex items-center gap-3 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-purple-500/30 transition-all max-w-sm">
     <div id="toast-icon" class="text-2xl">✨</div>
@@ -472,6 +574,96 @@
       { id: 'doublecheese', name: 'Double Cheese Spesial', price: 11000 },
       { id: 'chocokacang', name: 'Choco Kacang Lumer', price: 9000 }
     ];
+
+
+    // ==========================================================
+    // --- GOOGLE SHEETS INTEGRATION LOGIC ---
+    // ==========================================================
+    const SHEETS_CONFIG_KEY = 'candy_sheets_config_v1';
+
+    function getSheetsConfig() {
+      try {
+        return JSON.parse(localStorage.getItem(SHEETS_CONFIG_KEY)) || { sheetUrl: '', webhookUrl: '' };
+      } catch (e) {
+        return { sheetUrl: '', webhookUrl: '' };
+      }
+    }
+
+    function saveSheetsConfig(sheetUrl, webhookUrl) {
+      localStorage.setItem(SHEETS_CONFIG_KEY, JSON.stringify({ sheetUrl, webhookUrl }));
+      updateSheetsUI();
+      showToast('Pengaturan Tersimpan!', 'Konfigurasi Google Sheets berhasil diperbarui.', '💾');
+    }
+
+    function updateSheetsUI() {
+      const cfg = getSheetsConfig();
+      const sheetUrlInput = document.getElementById('sheet-url-input');
+      const webhookInput = document.getElementById('sheet-webhook-input');
+      const linkBtn = document.getElementById('open-sheets-link-btn');
+      const badge = document.getElementById('webhook-status-badge');
+
+      if (sheetUrlInput) sheetUrlInput.value = cfg.sheetUrl || '';
+      if (webhookInput) webhookInput.value = cfg.webhookUrl || '';
+
+      if (linkBtn) {
+        linkBtn.href = cfg.sheetUrl || 'https://docs.google.com/spreadsheets';
+      }
+
+      if (badge) {
+        if (cfg.webhookUrl && cfg.webhookUrl.trim().length > 10) {
+          badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
+          badge.textContent = '🟢 Terhubung (Auto-Sync Aktif)';
+        } else {
+          badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-600';
+          badge.textContent = 'Belum Terhubung';
+        }
+      }
+    }
+
+    async function sendDataToGoogleSheets(data) {
+      const cfg = getSheetsConfig();
+      if (!cfg.webhookUrl || cfg.webhookUrl.trim().length < 10) return false;
+
+      try {
+        await fetch(cfg.webhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        return true;
+      } catch (err) {
+        console.error('Error posting to Google Sheets webhook', err);
+        return false;
+      }
+    }
+
+    const APPS_SCRIPT_SAMPLE_CODE = `function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    
+    // Header jika sheet masih kosong
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(["ID Transaksi", "Tanggal", "Waktu", "Tipe", "Pelanggan", "Menu Pesanan", "Total Porsi", "Metode Bayar", "Total Omzet (Rp)"]);
+      sheet.getRange(1, 1, 1, 9).setFontWeight("bold").setBackground("#581c87").setFontColor("#ffffff");
+    }
+    
+    if (Array.isArray(data)) {
+      data.forEach(function(t) {
+        var items = (t.items || []).map(function(i){ return i.qty + "x " + i.name; }).join(", ");
+        sheet.appendRow([t.id, t.date, t.time, t.type, t.customerName, items, t.totalQty || 1, t.paymentMethod, t.total]);
+      });
+    } else {
+      var items = (data.items || []).map(function(i){ return i.qty + "x " + i.name; }).join(", ");
+      sheet.appendRow([data.id, data.date, data.time, data.type, data.customerName, items, data.totalQty || 1, data.paymentMethod, data.total]);
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({status: "success"})).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({status: "error", message: err.message})).setMimeType(ContentService.MimeType.JSON);
+  }
+}`;
 
     function formatRupiah(num) {
       return 'Rp ' + Number(num || 0).toLocaleString('id-ID');
@@ -633,6 +825,8 @@
       all.unshift(sale);
       localStorage.setItem(SALES_STORAGE_KEY, JSON.stringify(all));
       renderDashboard();
+      // Auto sync to Google Sheets if webhook configured
+      sendDataToGoogleSheets(sale);
     }
 
     function deleteSale(id) {
@@ -972,6 +1166,72 @@
         `Terima kasih! Jangan lupa bahagia 🙏`
       ];
       window.open(`https://wa.me/?text=${encodeURIComponent(lines.join('\n'))}`, '_blank');
+    });
+
+
+    // Google Sheets Modal Listeners
+    updateSheetsUI();
+
+    document.getElementById('open-sheets-modal-btn')?.addEventListener('click', () => {
+      updateSheetsUI();
+      document.getElementById('google-sheets-modal').classList.remove('hidden');
+    });
+
+    document.getElementById('close-sheets-modal-btn')?.addEventListener('click', () => {
+      document.getElementById('google-sheets-modal').classList.add('hidden');
+    });
+
+    document.getElementById('save-sheets-config-btn')?.addEventListener('click', () => {
+      const sheetUrl = document.getElementById('sheet-url-input').value.trim();
+      const webhookUrl = document.getElementById('sheet-webhook-input').value.trim();
+      saveSheetsConfig(sheetUrl, webhookUrl);
+    });
+
+    // Copy to clipboard formatted for Sheets (TSV)
+    document.getElementById('copy-sheets-clipboard-btn')?.addEventListener('click', () => {
+      const filtered = filterSales(getSalesRecords(), currentSalesPeriod);
+      if (filtered.length === 0) {
+        alert('Tidak ada transaksi pada periode ini untuk disalin.');
+        return;
+      }
+
+      let tsv = 'ID Transaksi\tTanggal\tWaktu\tTipe\tPelanggan\tMenu Pesanan\tTotal Porsi\tMetode Bayar\tTotal Omzet (Rp)\n';
+      filtered.forEach(t => {
+        const items = (t.items || []).map(i => `${i.qty}x ${i.name}`).join(', ');
+        tsv += `${t.id || ''}\t${t.date || ''}\t${t.time || ''}\t${t.type || ''}\t${t.customerName || ''}\t${items}\t${t.totalQty || 1}\t${t.paymentMethod || 'Tunai'}\t${t.total || 0}\n`;
+      });
+
+      navigator.clipboard.writeText(tsv).then(() => {
+        showToast('Tabel Disalin!', 'Buka Google Sheets, klik cell A1, lalu tekan Ctrl+V (Paste). Rapi seketika!', '📋');
+      }).catch(() => {
+        alert('Gagal menyalin otomatis. Silakan gunakan tombol unduh CSV.');
+      });
+    });
+
+    // Copy Apps Script code
+    document.getElementById('copy-script-code-btn')?.addEventListener('click', () => {
+      navigator.clipboard.writeText(APPS_SCRIPT_SAMPLE_CODE).then(() => {
+        showToast('Kode Script Disalin!', 'Paste ke Extensions -> Apps Script di Google Sheets kamu.', '📋');
+      });
+    });
+
+    // Sync all records now
+    document.getElementById('sync-all-to-sheets-btn')?.addEventListener('click', async () => {
+      const cfg = getSheetsConfig();
+      if (!cfg.webhookUrl || cfg.webhookUrl.trim().length < 10) {
+        alert('Harap isi dan simpan URL Webhook Google Apps Script terlebih dahulu.');
+        return;
+      }
+
+      const all = getSalesRecords();
+      if (all.length === 0) {
+        alert('Tidak ada data penjualan untuk dikirim.');
+        return;
+      }
+
+      showToast('Mengirim Data...', 'Mengirim data transaksi ke Google Sheets.', '⚡');
+      const success = await sendDataToGoogleSheets(all);
+      showToast('Sinkronisasi Dikirim!', 'Semua baris transaksi berhasil diteruskan ke Google Sheets.', '✅');
     });
 
     // Run Auth on load
