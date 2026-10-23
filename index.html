@@ -85,7 +85,11 @@
         <span class="hidden md:inline text-amber-300 font-semibold">🎟️ Kode Promo: <button type="button" id="top-copy-promo-btn" class="underline hover:text-white">HAPPYCREPES</button> (Diskon Rp 2.000)</span>
       </div>
       <div class="flex items-center gap-3 text-xs font-semibold">
-        <a href="#lokasi" class="underline hover:text-amber-200 transition">Lokasi Gerobak</a>
+        <button type="button" id="open-owner-dashboard-btn" class="bg-amber-400 hover:bg-amber-300 text-brand-darkPurple font-extrabold px-3 py-1 rounded-lg transition flex items-center gap-1.5 shadow-sm text-xs">
+          <span>📊</span>
+          <span>Laporan Penjualan (Owner)</span>
+        </button>
+        <a href="#lokasi" class="underline hover:text-amber-200 transition hidden sm:inline">Lokasi Gerobak</a>
       </div>
     </div>
   </div>
@@ -126,6 +130,10 @@
         </a>
         <a href="#gerobak" class="hover:text-brand-purple transition-colors py-1">Cerita Gerobak</a>
         <a href="#lokasi" class="hover:text-brand-purple transition-colors py-1">Lokasi</a>
+        <button type="button" id="nav-owner-btn" class="hover:bg-amber-200 bg-amber-100 text-brand-darkPurple border border-amber-300 px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 text-xs font-bold shadow-sm">
+          <span>📊</span>
+          <span>Laporan Owner</span>
+        </button>
       </nav>
 
       <!-- Action Buttons -->
@@ -163,6 +171,10 @@
       <a href="#builder" class="block px-3 py-2 rounded-lg hover:bg-purple-50 hover:text-brand-purple">🎨 Kustom Crepes Sendiri (DIY)</a>
       <a href="#gerobak" class="block px-3 py-2 rounded-lg hover:bg-purple-50 hover:text-brand-purple">🥞 Cerita Gerobak Mbak Pie</a>
       <a href="#lokasi" class="block px-3 py-2 rounded-lg hover:bg-purple-50 hover:text-brand-purple">📍 Lokasi & Jam Operasional</a>
+      <button type="button" id="mobile-owner-btn" class="w-full text-left px-3 py-2.5 rounded-xl bg-amber-300 text-brand-darkPurple font-bold hover:bg-amber-400 flex items-center gap-2 mt-2">
+        <span>📊</span>
+        <span>Laporan Penjualan &amp; Kasir (Owner)</span>
+      </button>
     </div>
   </header>
 
@@ -731,6 +743,10 @@
       </div>
       <div class="text-xs text-slate-500 text-center sm:text-right">
         <p>© 2026 Candy Crepes Mbak Pie. Renyah, Lumer &amp; Bikin Happy! Pemesanan Online Dadakan.</p>
+        <button type="button" id="footer-owner-btn" class="mt-2 text-xs text-amber-300 hover:text-amber-200 underline font-semibold inline-flex items-center gap-1">
+          <span>📊</span>
+          <span>Portal Laporan Penjualan Owner (Pengganti Kertas)</span>
+        </button>
       </div>
     </div>
   </footer>
@@ -1056,6 +1072,267 @@
 
   <!-- Hidden Canvas for Generating Downloadable PNG Favicons -->
   <canvas id="favicon-canvas" width="180" height="180" class="hidden"></canvas>
+
+
+  <!-- ==================== OWNER SALES REPORTING & POS MODAL ==================== -->
+  <div id="owner-dashboard-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white rounded-3xl max-w-5xl w-full max-h-[94vh] flex flex-col shadow-2xl border border-purple-200 overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="p-4 sm:p-6 bg-gradient-to-r from-brand-darkPurple via-brand-purple to-purple-900 text-white flex flex-wrap items-center justify-between gap-4 border-b border-purple-800 shrink-0">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="bg-amber-400 text-brand-darkPurple text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-sm">
+              👑 Portal Khusus Owner &amp; Kasir
+            </span>
+            <span class="text-xs text-purple-200">• Pencatatan Real-time</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-display font-extrabold text-white flex items-center gap-2">
+            <span>📊 Laporan Penjualan Gerobak Candy Crepes</span>
+          </h2>
+          <p class="text-xs text-purple-200 mt-0.5">
+            Solusi konkret pelaporan penjualan harian &amp; bulanan Mbak Pie — tanpa kertas manual lagi!
+          </p>
+        </div>
+
+        <!-- Action Buttons in Header -->
+        <div class="flex items-center gap-2">
+          <button type="button" id="open-quick-sale-btn" class="px-3.5 py-2 bg-brand-yellow hover:bg-amber-400 text-brand-darkPurple font-extrabold text-xs sm:text-sm rounded-xl shadow transition flex items-center gap-1.5">
+            <span>➕</span>
+            <span>+ Catat Pesanan Gerobak</span>
+          </button>
+          <button type="button" id="close-owner-dashboard-btn" class="w-9 h-9 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold flex items-center justify-center transition">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-4 sm:p-6 overflow-y-auto space-y-6 bg-slate-50 flex-1">
+        
+        <!-- Controls & Filters Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-purple-100 shadow-sm">
+          <div class="flex flex-wrap items-center gap-1.5" id="sales-period-tabs">
+            <button type="button" data-period="today" class="sales-tab active px-3.5 py-1.5 rounded-xl text-xs font-bold bg-brand-purple text-white shadow-sm transition">
+              📅 Hari Ini
+            </button>
+            <button type="button" data-period="week" class="sales-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-purple-50 text-slate-700 transition">
+              🗓️ 7 Hari Terakhir
+            </button>
+            <button type="button" data-period="month" class="sales-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-purple-50 text-slate-700 transition">
+              📆 Bulan Ini
+            </button>
+            <button type="button" data-period="all" class="sales-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-purple-50 text-slate-700 transition">
+              📂 Semua Riwayat
+            </button>
+          </div>
+
+          <!-- Export & Share Buttons -->
+          <div class="flex items-center gap-2">
+            <button type="button" id="export-wa-report-btn" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-sm">
+              <span>📲</span>
+              <span>Kirim Rekap ke WA Owner</span>
+            </button>
+            <button type="button" id="export-csv-btn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-sm">
+              <span>📥</span>
+              <span>Unduh Excel / CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Metric Summary Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          
+          <!-- Card 1: Total Omzet -->
+          <div class="bg-gradient-to-br from-purple-900 to-brand-purple text-white p-4 sm:p-5 rounded-2xl shadow-md space-y-1 relative overflow-hidden">
+            <div class="absolute -right-2 -bottom-2 text-5xl opacity-15">💰</div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-purple-200">Total Omzet Penjualan</span>
+            <div id="metric-total-omzet" class="text-xl sm:text-2xl font-display font-black text-amber-300">Rp 0</div>
+            <p class="text-[11px] text-purple-200" id="metric-period-label">Penjualan Terkonfirmasi</p>
+          </div>
+
+          <!-- Card 2: Porsi Terjual -->
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-purple-100 shadow-sm space-y-1 relative overflow-hidden">
+            <div class="absolute -right-2 -bottom-2 text-5xl opacity-10">🥞</div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Porsi Terjual</span>
+            <div id="metric-total-porsi" class="text-xl sm:text-2xl font-display font-black text-brand-purple">0 Porsi</div>
+            <p class="text-[11px] text-slate-500" id="metric-total-trx">0 Transaksi Sukses</p>
+          </div>
+
+          <!-- Card 3: Uang Tunai / Cash (Laci Gerobak) -->
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-emerald-100 shadow-sm space-y-1 relative overflow-hidden">
+            <div class="absolute -right-2 -bottom-2 text-5xl opacity-10">💵</div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Tunai (Kas Laci Gerobak)</span>
+            <div id="metric-cash-total" class="text-xl sm:text-2xl font-display font-black text-emerald-600">Rp 0</div>
+            <p class="text-[11px] text-slate-500" id="metric-cash-count">0 transaksi tunai</p>
+          </div>
+
+          <!-- Card 4: QRIS (Rekening Bank) -->
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-indigo-100 shadow-sm space-y-1 relative overflow-hidden">
+            <div class="absolute -right-2 -bottom-2 text-5xl opacity-10">📱</div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700">QRIS / Non-Tunai</span>
+            <div id="metric-qris-total" class="text-xl sm:text-2xl font-display font-black text-indigo-600">Rp 0</div>
+            <p class="text-[11px] text-slate-500" id="metric-qris-count">0 transaksi QRIS</p>
+          </div>
+
+        </div>
+
+        <!-- Breakdown Section: Menu Terlaris & Rekonsiliasi Kas -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          
+          <!-- Best Sellers (7 Cols) -->
+          <div class="lg:col-span-7 bg-white p-4 sm:p-5 rounded-2xl border border-purple-100 shadow-sm space-y-3">
+            <div class="flex items-center justify-between border-b border-purple-100 pb-2.5">
+              <h3 class="font-display font-bold text-slate-800 text-sm sm:text-base flex items-center gap-1.5">
+                <span>🏆</span>
+                <span>Varian Menu Paling Laris (Best Seller)</span>
+              </h3>
+              <span class="text-[11px] text-slate-400">Dasar belanja stok bahan</span>
+            </div>
+            <div id="best-seller-bars" class="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Daily Cash Reconciliation & Notes (5 Cols) -->
+          <div class="lg:col-span-5 bg-gradient-to-br from-amber-50 to-orange-50/60 p-4 sm:p-5 rounded-2xl border border-amber-200/80 shadow-sm space-y-3">
+            <div class="flex items-center justify-between border-b border-amber-200 pb-2.5">
+              <h3 class="font-display font-bold text-amber-900 text-sm sm:text-base flex items-center gap-1.5">
+                <span>📋</span>
+                <span>Pencocokan Kas Gerobak</span>
+              </h3>
+              <span class="text-[10px] bg-amber-200 text-amber-900 font-extrabold px-2 py-0.5 rounded-full">CEK FISIK</span>
+            </div>
+            
+            <div class="text-xs text-amber-950 space-y-2">
+              <div class="flex justify-between items-center py-1.5 border-b border-amber-200/50">
+                <span class="text-slate-600">Uang Fisik di Laci:</span>
+                <span class="font-bold text-emerald-700 text-sm" id="reconcile-cash">Rp 0</span>
+              </div>
+              <div class="flex justify-between items-center py-1.5 border-b border-amber-200/50">
+                <span class="text-slate-600">Saldo QRIS Rekening:</span>
+                <span class="font-bold text-indigo-700 text-sm" id="reconcile-qris">Rp 0</span>
+              </div>
+              <div class="flex justify-between items-center py-1.5 font-bold">
+                <span>Total Setoran Hari Ini:</span>
+                <span class="text-brand-purple text-base" id="reconcile-total">Rp 0</span>
+              </div>
+              <p class="text-[11px] text-slate-500 pt-1 leading-relaxed">
+                💡 <em>Tips Owner:</em> Cocokkan uang tunai fisik di gerobak sebelum tutup dengan angka di atas agar tidak ada selisih kas.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Transaction Log Table -->
+        <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden space-y-3 p-4 sm:p-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-3">
+            <div>
+              <h3 class="font-display font-bold text-slate-900 text-base flex items-center gap-2">
+                <span>🧾 Riwayat Transaksi Konkret</span>
+                <span id="trx-table-count-badge" class="text-xs bg-purple-100 text-brand-purple px-2 py-0.5 rounded-full font-bold">0 transaksi</span>
+              </h3>
+              <p class="text-xs text-slate-500">Setiap pesanan online &amp; kasir tercatat permanen di bawah ini</p>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <input type="text" id="sales-search-input" placeholder="Cari nama / menu..." class="text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-purple focus:outline-none w-44">
+              <button type="button" id="clear-sales-data-btn" class="text-xs text-rose-600 hover:text-rose-800 font-semibold px-2 py-1 rounded-lg hover:bg-rose-50 transition" title="Mulai pembukuan baru">
+                Reset Data
+              </button>
+            </div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="overflow-x-auto max-h-72 overflow-y-auto">
+            <table class="w-full text-left text-xs text-slate-700">
+              <thead class="bg-purple-50/80 text-brand-darkPurple uppercase text-[10px] font-extrabold sticky top-0">
+                <tr>
+                  <th class="py-2.5 px-3 rounded-l-lg">Waktu</th>
+                  <th class="py-2.5 px-3">Tipe</th>
+                  <th class="py-2.5 px-3">Pemesan</th>
+                  <th class="py-2.5 px-3">Rincian Menu</th>
+                  <th class="py-2.5 px-3">Bayar</th>
+                  <th class="py-2.5 px-3 text-right">Total</th>
+                  <th class="py-2.5 px-3 text-center rounded-r-lg">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="sales-table-body" class="divide-y divide-slate-100">
+                <!-- Rendered dynamically via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 bg-slate-100 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+        <div>
+          <span>Database Lokal Gerobak: </span>
+          <span class="font-bold text-slate-700" id="sales-db-status">Tersimpan Aman di Browser</span>
+        </div>
+        <button type="button" id="close-owner-footer-btn" class="px-5 py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-xl transition">
+          Tutup Panel Laporan
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== QUICK OFFLINE KASIR GEROBAK MODAL ==================== -->
+  <div id="quick-sale-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-purple-100 p-6 space-y-4">
+      
+      <div class="flex items-center justify-between border-b border-purple-100 pb-3">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-brand-purple">Kasir Cepat Gerobak</span>
+          <h3 class="font-display font-bold text-xl text-slate-900">Catat Penjualan Langsung (Offline)</h3>
+        </div>
+        <button type="button" id="close-quick-sale-btn" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl">✕</button>
+      </div>
+
+      <form id="quick-sale-form" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Menu Crepes *</label>
+          <select id="quick-menu-select" required class="w-full text-xs sm:text-sm p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-purple focus:outline-none font-medium">
+            <!-- Populated via JS from MENU_ITEMS -->
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Jumlah Porsi *</label>
+            <input type="number" id="quick-qty-input" min="1" max="50" value="1" required class="w-full text-xs sm:text-sm p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-purple focus:outline-none font-bold text-center">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Metode Pembayaran *</label>
+            <select id="quick-payment-select" class="w-full text-xs sm:text-sm p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-purple focus:outline-none font-bold text-brand-purple">
+              <option value="Tunai">💵 Tunai (Cash)</option>
+              <option value="QRIS">📱 QRIS / Bank</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Nama Pembeli (Opsional)</label>
+          <input type="text" id="quick-cust-name" placeholder="Contoh: Mas Budi / Pelanggan Gerobak" class="w-full text-xs sm:text-sm p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-purple focus:outline-none">
+        </div>
+
+        <div class="bg-purple-50 p-3 rounded-xl border border-purple-100 flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-700">Total Harga:</span>
+          <span id="quick-calc-price" class="font-display font-extrabold text-xl text-brand-purple">Rp 9.000</span>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 bg-brand-purple hover:bg-brand-darkPurple text-white font-display font-bold text-sm rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2">
+          <span>💾</span>
+          <span>Simpan ke Laporan Penjualan</span>
+        </button>
+      </form>
+
+    </div>
+  </div>
 
   <!-- Toast Notification -->
   <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 transform translate-y-24 opacity-0 transition-all duration-300 max-w-sm pointer-events-none">
@@ -2027,6 +2304,432 @@
         document.getElementById('qris-modal-backdrop').classList.add('hidden');
       });
 
+
+    // ==========================================================
+    // --- OWNER SALES REPORTING & DIGITAL GEROBAK POS SYSTEM ---
+    // ==========================================================
+    const SALES_STORAGE_KEY = 'candy_crepes_sales_v1';
+    let currentSalesPeriod = 'today';
+
+    function getInitialSalesSeed() {
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+      return [
+        {
+          id: 'TRX-' + (Date.now() - 3600000).toString().slice(-6),
+          date: todayStr,
+          time: '15:15',
+          type: 'Kasir Gerobak',
+          customerName: 'Mas Budi (Offline)',
+          items: [{ name: 'Chococheese Crispy', qty: 2, price: 18000 }],
+          totalQty: 2,
+          paymentMethod: 'Tunai',
+          total: 18000
+        },
+        {
+          id: 'TRX-' + (Date.now() - 3000000).toString().slice(-6),
+          date: todayStr,
+          time: '16:05',
+          type: 'Online WA',
+          customerName: 'Rina Septiani',
+          items: [{ name: 'Choco Banana Crunch', qty: 1, price: 10000 }],
+          totalQty: 1,
+          paymentMethod: 'QRIS',
+          total: 10000
+        },
+        {
+          id: 'TRX-' + (Date.now() - 2400000).toString().slice(-6),
+          date: todayStr,
+          time: '16:40',
+          type: 'Kasir Gerobak',
+          customerName: 'Anak Sekolah (Siswa SMP)',
+          items: [{ name: 'Matchamilk Crunchy', qty: 1, price: 10000 }],
+          totalQty: 1,
+          paymentMethod: 'Tunai',
+          total: 10000
+        },
+        {
+          id: 'TRX-' + (Date.now() - 1800000).toString().slice(-6),
+          date: todayStr,
+          time: '17:20',
+          type: 'Kasir Gerobak',
+          customerName: 'Ibu Ratna',
+          items: [{ name: 'Chococheese Crispy', qty: 3, price: 27000 }],
+          totalQty: 3,
+          paymentMethod: 'Tunai',
+          total: 27000
+        },
+        {
+          id: 'TRX-' + (Date.now() - 1200000).toString().slice(-6),
+          date: todayStr,
+          time: '18:10',
+          type: 'Online WA',
+          customerName: 'Dimas Aditya',
+          items: [
+            { name: 'Paket Kombo Bestie (2 Porsi)', qty: 1, price: 17000 },
+            { name: 'Strawberry Delight', qty: 1, price: 8000 }
+          ],
+          totalQty: 3,
+          paymentMethod: 'QRIS',
+          total: 25000
+        },
+        {
+          id: 'TRX-' + (Date.now() - 600000).toString().slice(-6),
+          date: todayStr,
+          time: '19:00',
+          type: 'Kasir Gerobak',
+          customerName: 'Kak Fikri',
+          items: [{ name: 'Oreo Choco Melt', qty: 1, price: 10000 }],
+          totalQty: 1,
+          paymentMethod: 'Tunai',
+          total: 10000
+        }
+      ];
+    }
+
+    function getAllSalesRecords() {
+      try {
+        const raw = localStorage.getItem(SALES_STORAGE_KEY);
+        if (!raw) {
+          const seed = getInitialSalesSeed();
+          localStorage.setItem(SALES_STORAGE_KEY, JSON.stringify(seed));
+          return seed;
+        }
+        return JSON.parse(raw) || [];
+      } catch (e) {
+        console.error('Error reading sales storage', e);
+        return [];
+      }
+    }
+
+    function saveSaleTransaction(trx) {
+      const all = getAllSalesRecords();
+      all.unshift(trx);
+      try {
+        localStorage.setItem(SALES_STORAGE_KEY, JSON.stringify(all));
+      } catch (e) {
+        console.error('Error saving sale', e);
+      }
+      renderSalesDashboard();
+    }
+
+    function deleteSaleTransaction(id) {
+      if (!confirm('Yakin ingin menghapus catatan transaksi ini dari laporan?')) return;
+      let all = getAllSalesRecords();
+      all = all.filter(t => t.id !== id);
+      try {
+        localStorage.setItem(SALES_STORAGE_KEY, JSON.stringify(all));
+      } catch (e) {}
+      renderSalesDashboard();
+      showToast('Transaksi Dihapus', 'Catatan transaksi telah diperbarui.', '🗑️');
+    }
+
+    function filterSalesByPeriod(records, period) {
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+      if (period === 'today') {
+        return records.filter(r => r.date === todayStr);
+      } else if (period === 'week') {
+        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return records.filter(r => new Date(r.date) >= sevenDaysAgo);
+      } else if (period === 'month') {
+        const currentMonth = `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
+        return records.filter(r => r.date && r.date.startsWith(currentMonth));
+      }
+      return records;
+    }
+
+    function renderSalesDashboard() {
+      const all = getAllSalesRecords();
+      const query = (document.getElementById('sales-search-input')?.value || '').toLowerCase().trim();
+      let filtered = filterSalesByPeriod(all, currentSalesPeriod);
+
+      if (query) {
+        filtered = filtered.filter(t => {
+          const itemsStr = (t.items || []).map(i => i.name).join(' ').toLowerCase();
+          const cust = (t.customerName || '').toLowerCase();
+          const id = (t.id || '').toLowerCase();
+          return cust.includes(query) || itemsStr.includes(query) || id.includes(query);
+        });
+      }
+
+      // Calculations
+      let totalOmzet = 0;
+      let totalPorsi = 0;
+      let cashTotal = 0;
+      let cashCount = 0;
+      let qrisTotal = 0;
+      let qrisCount = 0;
+      const flavorCounts = {};
+
+      filtered.forEach(t => {
+        totalOmzet += (t.total || 0);
+        totalPorsi += (t.totalQty || 1);
+
+        if ((t.paymentMethod || '').toLowerCase().includes('tunai') || (t.paymentMethod || '').toLowerCase().includes('cash')) {
+          cashTotal += (t.total || 0);
+          cashCount++;
+        } else {
+          qrisTotal += (t.total || 0);
+          qrisCount++;
+        }
+
+        (t.items || []).forEach(item => {
+          flavorCounts[item.name] = (flavorCounts[item.name] || 0) + (item.qty || 1);
+        });
+      });
+
+      // Update Metric Cards
+      const omzetEl = document.getElementById('metric-total-omzet');
+      if (omzetEl) omzetEl.textContent = formatRupiah(totalOmzet);
+
+      const porsiEl = document.getElementById('metric-total-porsi');
+      if (porsiEl) porsiEl.textContent = `${totalPorsi} Porsi`;
+
+      const trxCountEl = document.getElementById('metric-total-trx');
+      if (trxCountEl) trxCountEl.textContent = `${filtered.length} Transaksi Terkonfirmasi`;
+
+      const cashEl = document.getElementById('metric-cash-total');
+      if (cashEl) cashEl.textContent = formatRupiah(cashTotal);
+      const cashCountEl = document.getElementById('metric-cash-count');
+      if (cashCountEl) cashCountEl.textContent = `${cashCount} transaksi tunai`;
+
+      const qrisEl = document.getElementById('metric-qris-total');
+      if (qrisEl) qrisEl.textContent = formatRupiah(qrisTotal);
+      const qrisCountEl = document.getElementById('metric-qris-count');
+      if (qrisCountEl) qrisCountEl.textContent = `${qrisCount} transaksi QRIS`;
+
+      // Reconciliation Box
+      const recCash = document.getElementById('reconcile-cash');
+      if (recCash) recCash.textContent = formatRupiah(cashTotal);
+      const recQris = document.getElementById('reconcile-qris');
+      if (recQris) recQris.textContent = formatRupiah(qrisTotal);
+      const recTotal = document.getElementById('reconcile-total');
+      if (recTotal) recTotal.textContent = formatRupiah(totalOmzet);
+
+      const badgeCount = document.getElementById('trx-table-count-badge');
+      if (badgeCount) badgeCount.textContent = `${filtered.length} transaksi`;
+
+      // Render Best Seller Bars
+      const bestSellersEl = document.getElementById('best-seller-bars');
+      if (bestSellersEl) {
+        const sortedFlavors = Object.entries(flavorCounts).sort((a, b) => b[1] - a[1]);
+        if (sortedFlavors.length === 0) {
+          bestSellersEl.innerHTML = '<p class="text-xs text-slate-400 py-3 text-center">Belum ada data porsi terjual pada periode ini.</p>';
+        } else {
+          const maxPorsi = sortedFlavors[0][1] || 1;
+          bestSellersEl.innerHTML = sortedFlavors.map(([name, count], index) => {
+            const pct = Math.round((count / maxPorsi) * 100);
+            return `
+              <div class="space-y-1">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="font-bold text-slate-700 flex items-center gap-1.5">
+                    <span class="w-4 h-4 rounded-full bg-purple-100 text-brand-purple font-black text-[10px] flex items-center justify-center">${index + 1}</span>
+                    <span>${name}</span>
+                  </span>
+                  <span class="font-extrabold text-brand-purple">${count} porsi</span>
+                </div>
+                <div class="w-full bg-purple-100 rounded-full h-2 overflow-hidden">
+                  <div class="bg-gradient-to-r from-brand-purple to-amber-400 h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // Render Transactions Table
+      const tableBody = document.getElementById('sales-table-body');
+      if (tableBody) {
+        if (filtered.length === 0) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="7" class="py-8 text-center text-slate-400 text-xs">
+                Tidak ada catatan transaksi yang sesuai filter.
+              </td>
+            </tr>
+          `;
+        } else {
+          tableBody.innerHTML = filtered.map(t => {
+            const isCash = (t.paymentMethod || '').toLowerCase().includes('tunai') || (t.paymentMethod || '').toLowerCase().includes('cash');
+            const isKasir = (t.type || '').includes('Kasir');
+            const itemsSummary = (t.items || []).map(i => `${i.qty}x ${i.name}`).join(', ');
+
+            return `
+              <tr class="hover:bg-purple-50/50 transition">
+                <td class="py-2.5 px-3 font-semibold text-slate-500 whitespace-nowrap">
+                  <div>${t.time || '-'}</div>
+                  <div class="text-[10px] text-slate-400">${t.date || ''}</div>
+                </td>
+                <td class="py-2.5 px-3">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isKasir ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-purple-100 text-purple-900 border border-purple-200'}">
+                    ${t.type || 'Penjualan'}
+                  </span>
+                </td>
+                <td class="py-2.5 px-3 font-bold text-slate-800">
+                  ${t.customerName || 'Pelanggan'}
+                </td>
+                <td class="py-2.5 px-3 text-slate-600 max-w-xs truncate" title="${itemsSummary}">
+                  ${itemsSummary || '-'}
+                </td>
+                <td class="py-2.5 px-3">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isCash ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800'}">
+                    ${t.paymentMethod || 'Tunai'}
+                  </span>
+                </td>
+                <td class="py-2.5 px-3 text-right font-display font-bold text-brand-purple whitespace-nowrap">
+                  ${formatRupiah(t.total || 0)}
+                </td>
+                <td class="py-2.5 px-3 text-center">
+                  <button type="button" class="del-trx-btn text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1 rounded transition" data-id="${t.id}" title="Hapus transaksi">
+                    🗑️
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          // Bind delete buttons
+          tableBody.querySelectorAll('.del-trx-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              deleteSaleTransaction(btn.dataset.id);
+            });
+          });
+        }
+      }
+    }
+
+    function exportSalesToWhatsApp() {
+      const all = getAllSalesRecords();
+      const filtered = filterSalesByPeriod(all, currentSalesPeriod);
+
+      let totalOmzet = 0;
+      let totalPorsi = 0;
+      let cashTotal = 0;
+      let cashCount = 0;
+      let qrisTotal = 0;
+      let qrisCount = 0;
+      const flavorCounts = {};
+
+      filtered.forEach(t => {
+        totalOmzet += (t.total || 0);
+        totalPorsi += (t.totalQty || 1);
+        if ((t.paymentMethod || '').toLowerCase().includes('tunai') || (t.paymentMethod || '').toLowerCase().includes('cash')) {
+          cashTotal += (t.total || 0);
+          cashCount++;
+        } else {
+          qrisTotal += (t.total || 0);
+          qrisCount++;
+        }
+        (t.items || []).forEach(item => {
+          flavorCounts[item.name] = (flavorCounts[item.name] || 0) + (item.qty || 1);
+        });
+      });
+
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const dateStr = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()}`;
+
+      const sortedFlavors = Object.entries(flavorCounts).sort((a, b) => b[1] - a[1]);
+      const top3 = sortedFlavors.slice(0, 3).map(([n, q], idx) => `  ${idx + 1}. ${n}: ${q} porsi`).join('\n') || '  (Belum ada data)';
+
+      const periodNames = {
+        today: 'Hari Ini',
+        week: '7 Hari Terakhir',
+        month: 'Bulan Ini',
+        all: 'Semua Riwayat'
+      };
+
+      const lines = [
+        `📊 *LAPORAN PENJUALAN GEROBAK CANDY CREPES*`,
+        `📅 *Periode:* ${periodNames[currentSalesPeriod] || 'Hari Ini'} (${dateStr})`,
+        `⏰ *Waktu Cetak:* ${timeStr} WIB`,
+        `----------------------------------------`,
+        `💰 *TOTAL OMZET:* ${formatRupiah(totalOmzet)}`,
+        `🥞 *Total Porsi Terjual:* ${totalPorsi} Porsi`,
+        `🧾 *Total Transaksi:* ${filtered.length} Struk`,
+        ``,
+        `💳 *RINCIAN KAS & PEMBAYARAN:*`,
+        `💵 *Tunai (Laci Gerobak):* ${formatRupiah(cashTotal)} (${cashCount} trx)`,
+        `📱 *QRIS (Rekening Bank):* ${formatRupiah(qrisTotal)} (${qrisCount} trx)`,
+        ``,
+        `🏆 *TOP 3 MENU PALING LARIS:*`,
+        top3,
+        `----------------------------------------`,
+        `Catatan: Laporan otomatis sistem digital Candy Crepes Mbak Pie (Pengganti Kertas Manual).`
+      ];
+
+      const waUrl = `https://wa.me/6281234567890?text=${encodeURIComponent(lines.join('\n'))}`;
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
+      showToast('Rekap Penjualan Dibuat!', 'Membuka WhatsApp untuk mengirim laporan ke owner.', '📲');
+    }
+
+    function exportSalesToCSV() {
+      const all = getAllSalesRecords();
+      const filtered = filterSalesByPeriod(all, currentSalesPeriod);
+
+      if (filtered.length === 0) {
+        alert('Tidak ada transaksi pada periode ini untuk diunduh.');
+        return;
+      }
+
+      let csv = '\uFEFF'; // UTF-8 BOM for Excel compatibility
+      csv += 'ID Transaksi,Tanggal,Waktu,Tipe Penjualan,Nama Pemesan,Daftar Menu,Total Porsi,Metode Bayar,Total Omzet (Rp)\n';
+
+      filtered.forEach(t => {
+        const items = (t.items || []).map(i => `${i.qty}x ${i.name}`).join('; ');
+        const row = [
+          t.id || '',
+          t.date || '',
+          t.time || '',
+          `"${(t.type || '').replace(/"/g, '""')}"`,
+          `"${(t.customerName || '').replace(/"/g, '""')}"`,
+          `"${items.replace(/"/g, '""')}"`,
+          t.totalQty || 1,
+          t.paymentMethod || 'Tunai',
+          t.total || 0
+        ];
+        csv += row.join(',') + '\n';
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `laporan-penjualan-candy-crepes-${currentSalesPeriod}-${Date.now().toString().slice(-4)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('File CSV Diunduh!', 'Laporan pembukuan siap dibuka di Microsoft Excel.', '📥');
+    }
+
+    function initQuickKasirMenuSelect() {
+      const select = document.getElementById('quick-menu-select');
+      if (!select) return;
+      select.innerHTML = MENU_ITEMS.map(m => `
+        <option value="${m.id}" data-price="${m.price}">${m.name} — ${formatRupiah(m.price)}</option>
+      `).join('');
+
+      const updateQuickCalc = () => {
+        const selectedOpt = select.selectedOptions[0];
+        const price = selectedOpt ? parseInt(selectedOpt.dataset.price, 10) : 9000;
+        const qty = parseInt(document.getElementById('quick-qty-input')?.value || 1, 10);
+        const total = price * (qty > 0 ? qty : 1);
+        const calcEl = document.getElementById('quick-calc-price');
+        if (calcEl) calcEl.textContent = formatRupiah(total);
+      };
+
+      select.addEventListener('change', updateQuickCalc);
+      document.getElementById('quick-qty-input')?.addEventListener('input', updateQuickCalc);
+      updateQuickCalc();
+    }
+
       // WhatsApp Order Form Submit
       document.getElementById('checkout-form').addEventListener('submit', e => {
         e.preventDefault();
@@ -2062,11 +2765,118 @@
         lines.push(`Estimasi Masak: ~${estMinutes} menit`);
         lines.push(`Terima kasih Mbak Pie! 🙏`);
 
+        // Save online order automatically into Owner Sales Records
+        const now = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const newSaleTrx = {
+          id: 'WA-' + Date.now().toString().slice(-6),
+          date: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
+          time: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
+          type: 'Online WA',
+          customerName: name || 'Pelanggan Online',
+          items: cart.map(c => ({
+            name: c.name,
+            qty: c.qty,
+            price: c.unitPrice * c.qty
+          })),
+          totalQty: totalQty,
+          paymentMethod: payment || 'Tunai',
+          total: finalTotal
+        };
+        saveSaleTransaction(newSaleTrx);
+
         const waUrl = `https://wa.me/6281234567890?text=${encodeURIComponent(lines.join('\n'))}`;
         window.open(waUrl, '_blank', 'noopener,noreferrer');
         document.getElementById('checkout-modal-backdrop').classList.add('hidden');
-        showToast('Pesanan Siap Dikirim!', 'Membuka WhatsApp Mbak Pie...', '🚀');
+        showToast('Pesanan Masuk & Dicatat!', 'Membuka WhatsApp dan mencatat pesanan ke laporan penjualan owner.', '🚀');
       });
+
+      // Owner Dashboard Listeners
+      const openOwnerModal = () => {
+        renderSalesDashboard();
+        document.getElementById('owner-dashboard-modal').classList.remove('hidden');
+      };
+      const closeOwnerModal = () => {
+        document.getElementById('owner-dashboard-modal').classList.add('hidden');
+      };
+
+      document.getElementById('open-owner-dashboard-btn')?.addEventListener('click', openOwnerModal);
+      document.getElementById('nav-owner-btn')?.addEventListener('click', openOwnerModal);
+      document.getElementById('mobile-owner-btn')?.addEventListener('click', openOwnerModal);
+      document.getElementById('footer-owner-btn')?.addEventListener('click', openOwnerModal);
+      document.getElementById('close-owner-dashboard-btn')?.addEventListener('click', closeOwnerModal);
+      document.getElementById('close-owner-footer-btn')?.addEventListener('click', closeOwnerModal);
+
+      // Period Tabs
+      document.querySelectorAll('#sales-period-tabs .sales-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('#sales-period-tabs .sales-tab').forEach(t => {
+            t.className = 'sales-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-purple-50 text-slate-700 transition';
+          });
+          tab.className = 'sales-tab active px-3.5 py-1.5 rounded-xl text-xs font-bold bg-brand-purple text-white shadow-sm transition';
+          currentSalesPeriod = tab.dataset.period;
+          renderSalesDashboard();
+        });
+      });
+
+      // Search input
+      document.getElementById('sales-search-input')?.addEventListener('input', () => {
+        renderSalesDashboard();
+      });
+
+      // Reset data
+      document.getElementById('clear-sales-data-btn')?.addEventListener('click', () => {
+        if (confirm('Apakah Anda yakin ingin mereset seluruh data penjualan untuk memulai pembukuan baru?')) {
+          localStorage.removeItem(SALES_STORAGE_KEY);
+          renderSalesDashboard();
+          showToast('Data Direset', 'Database penjualan siap untuk hari baru.', '🔄');
+        }
+      });
+
+      // Export Buttons
+      document.getElementById('export-wa-report-btn')?.addEventListener('click', exportSalesToWhatsApp);
+      document.getElementById('export-csv-btn')?.addEventListener('click', exportSalesToCSV);
+
+      // Quick Kasir Offline Modal
+      initQuickKasirMenuSelect();
+      document.getElementById('open-quick-sale-btn')?.addEventListener('click', () => {
+        document.getElementById('quick-sale-modal').classList.remove('hidden');
+      });
+      document.getElementById('close-quick-sale-btn')?.addEventListener('click', () => {
+        document.getElementById('quick-sale-modal').classList.add('hidden');
+      });
+
+      document.getElementById('quick-sale-form')?.addEventListener('submit', e => {
+        e.preventDefault();
+        const select = document.getElementById('quick-menu-select');
+        const selectedOpt = select.selectedOptions[0];
+        const menuName = selectedOpt.text.split(' — ')[0];
+        const price = parseInt(selectedOpt.dataset.price, 10);
+        const qty = parseInt(document.getElementById('quick-qty-input').value, 10) || 1;
+        const payment = document.getElementById('quick-payment-select').value;
+        const cust = document.getElementById('quick-cust-name').value.trim() || 'Pembeli Gerobak';
+
+        const now = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const newTrx = {
+          id: 'POS-' + Date.now().toString().slice(-6),
+          date: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
+          time: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
+          type: 'Kasir Gerobak',
+          customerName: cust,
+          items: [{ name: menuName, qty: qty, price: price * qty }],
+          totalQty: qty,
+          paymentMethod: payment,
+          total: price * qty
+        };
+
+        saveSaleTransaction(newTrx);
+        document.getElementById('quick-sale-modal').classList.add('hidden');
+        document.getElementById('quick-cust-name').value = '';
+        document.getElementById('quick-qty-input').value = '1';
+        showToast('Transaksi Kasir Disimpan!', `${qty}x ${menuName} (${formatRupiah(price * qty)}) berhasil dicatat ke omzet.`, '✅');
+      });
+
     });
   </script>
 </body>
