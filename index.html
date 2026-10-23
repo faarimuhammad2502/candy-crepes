@@ -1243,8 +1243,8 @@
 
             <div class="flex items-center gap-2">
               <input type="text" id="sales-search-input" placeholder="Cari nama / menu..." class="text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-purple focus:outline-none w-44">
-              <button type="button" id="clear-sales-data-btn" class="text-xs text-rose-600 hover:text-rose-800 font-semibold px-2 py-1 rounded-lg hover:bg-rose-50 transition" title="Mulai pembukuan baru">
-                Reset Data
+              <button type="button" id="clear-sales-data-btn" class="text-xs text-rose-600 hover:text-rose-800 font-semibold px-2 py-1 rounded-lg hover:bg-rose-50 transition" title="Kosongkan data demo">
+                🧹 Kosongkan Data Demo
               </button>
             </div>
           </div>
@@ -2832,12 +2832,12 @@
         renderSalesDashboard();
       });
 
-      // Reset data
+      // Reset / Wipe Demo Data
       document.getElementById('clear-sales-data-btn')?.addEventListener('click', () => {
-        if (confirm('Apakah Anda yakin ingin mereset seluruh data penjualan untuk memulai pembukuan baru?')) {
-          localStorage.removeItem(SALES_STORAGE_KEY);
+        if (confirm('Apakah Anda yakin ingin mengosongkan semua data penjualan demo ini?\n\nData akan menjadi 0 transaksi dan siap untuk pembukuan pertama owner/saudara.')) {
+          localStorage.setItem(SALES_STORAGE_KEY, JSON.stringify([]));
           renderSalesDashboard();
-          showToast('Data Direset', 'Database penjualan siap untuk hari baru.', '🔄');
+          showToast('Data Demo Dibersihkan!', 'Laporan penjualan kini bersih (0 transaksi) & siap dipakai pertama kali.', '🧹');
         }
       });
 
