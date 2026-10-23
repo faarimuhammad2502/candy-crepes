@@ -85,11 +85,7 @@
         <span class="hidden md:inline text-amber-300 font-semibold">🎟️ Kode Promo: <button type="button" id="top-copy-promo-btn" class="underline hover:text-white">HAPPYCREPES</button> (Diskon Rp 2.000)</span>
       </div>
       <div class="flex items-center gap-3 text-xs font-semibold">
-        <button type="button" id="open-favicon-modal-top" class="bg-white/15 hover:bg-white/25 text-amber-300 px-2.5 py-1 rounded-lg transition flex items-center gap-1">
-          <span>✨</span>
-          <span>Lihat & Unduh Favicon</span>
-        </button>
-        <a href="#lokasi" class="underline hover:text-amber-200 transition hidden sm:inline">Lokasi Gerobak</a>
+        <a href="#lokasi" class="underline hover:text-amber-200 transition">Lokasi Gerobak</a>
       </div>
     </div>
   </div>
@@ -302,7 +298,7 @@
               Favicon Maskot "Candy Crepes" Siap Pakai!
             </h2>
             <p class="text-purple-100 text-xs sm:text-sm leading-relaxed">
-              Favicon website sudah dipasang otomatis pada tab browser (<code class="bg-black/30 px-1.5 py-0.5 rounded text-amber-300">&lt;link rel="icon"&gt;</code> &amp; <code class="bg-black/30 px-1.5 py-0.5 rounded text-amber-300">apple-touch-icon</code>) terinspirasi dari maskot segitiga crepes kuning ceria di gerobak Mbak Pie. Kamu juga bisa mengganti tema warna favicon secara langsung atau mengunduh filenya!
+              Favicon website sudah dipasang otomatis pada tab browser (<code class="bg-black/30 px-1.5 py-0.5 rounded text-amber-300">&lt;link rel="icon"&gt;</code> &amp; <code class="bg-black/30 px-1.5 py-0.5 rounded text-amber-300">apple-touch-icon</code>) terinspirasi dari maskot segitiga crepes kuning ceria di gerobak Mbak Pie. Kamu juga bisa mengganti tema warna favicon secara langsung!
             </p>
 
             <!-- Interactive Favicon Theme Selector -->
@@ -322,19 +318,6 @@
                   <span>Sweet Strawberry Pink</span>
                 </button>
               </div>
-            </div>
-
-            <!-- Download Favicon Buttons -->
-            <div class="flex flex-wrap items-center gap-2.5 pt-2">
-              <button type="button" id="download-fav-png64" class="px-4 py-2.5 bg-brand-yellow hover:bg-amber-400 text-brand-darkPurple font-extrabold text-xs rounded-xl shadow transition flex items-center gap-1.5">
-                <span>⬇️ Unduh Favicon PNG (64×64)</span>
-              </button>
-              <button type="button" id="download-fav-png180" class="px-4 py-2.5 bg-white/20 hover:bg-white/30 text-white font-bold text-xs rounded-xl transition flex items-center gap-1.5">
-                <span>📱 Unduh App Icon (180×180)</span>
-              </button>
-              <button type="button" id="download-fav-svg" class="px-4 py-2.5 bg-white/20 hover:bg-white/30 text-white font-bold text-xs rounded-xl transition flex items-center gap-1.5">
-                <span>✨ Unduh File Vector (.SVG)</span>
-              </button>
             </div>
           </div>
 
@@ -1254,7 +1237,7 @@
         if (el) el.innerHTML = svgStr;
       });
 
-      // Also render PNG to canvas for Apple Touch Icon & PNG download
+      // Also render PNG to canvas for Apple Touch Icon
       const canvas = document.getElementById('favicon-canvas');
       if (canvas) {
         const ctx = canvas.getContext('2d');
@@ -1272,41 +1255,6 @@
         };
         img.src = encodedSvg;
       }
-    }
-
-    function downloadFaviconAsset(format, size) {
-      const svgStr = buildFaviconSvgString(currentFaviconTheme);
-      if (format === 'svg') {
-        const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `candy-crepes-favicon-${currentFaviconTheme}.svg`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showToast('Favicon SVG Diunduh!', 'File vector favicon.svg siap dipasang di web.');
-        return;
-      }
-
-      const canvas = document.createElement('canvas');
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
-      img.onload = function() {
-        ctx.drawImage(img, 0, 0, size, size);
-        const pngUrl = canvas.toDataURL('image/png');
-        const a = document.createElement('a');
-        a.href = pngUrl;
-        a.download = `candy-crepes-favicon-${size}x${size}.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        showToast('Favicon PNG Diunduh!', `Ukuran ${size}x${size}px berhasil disimpan.`);
-      };
-      img.src = 'data:image/svg+xml,' + encodeURIComponent(svgStr);
     }
 
     // --- All 14 Official Menu Items from Mbak Pie's Stall Banner ---
@@ -1901,14 +1849,6 @@
           applyFaviconTheme(btn.dataset.favTheme);
           showToast('Tema Favicon Diganti!', 'Ikon pada tab browser dan logo telah diperbarui.', '🎨');
         });
-      });
-
-      document.getElementById('download-fav-png64').addEventListener('click', () => downloadFaviconAsset('png', 64));
-      document.getElementById('download-fav-png180').addEventListener('click', () => downloadFaviconAsset('png', 180));
-      document.getElementById('download-fav-svg').addEventListener('click', () => downloadFaviconAsset('svg', 120));
-
-      document.getElementById('open-favicon-modal-top').addEventListener('click', () => {
-        document.getElementById('favicon-showcase').scrollIntoView({ behavior: 'smooth' });
       });
 
       // Top promo copy
