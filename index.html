@@ -690,8 +690,12 @@
             <p class="text-xs sm:text-sm text-purple-200">
               Mau borong Candy Crepes untuk acara ulang tahun, arisan, atau traktiran kantor? Chat Mbak Pie langsung!
             </p>
-            <a href="https://wa.me/6281234567890?text=Halo%20Mbak%20Pie,%20saya%20mau%20tanya%20pesanan%20Candy%20Crepes" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl shadow-lg transition-all">
-              <span>Chat WhatsApp Mbak Pie</span>
+            <a href="https://wa.me/6285731745854?text=Halo%20Mbak%20Pie,%20saya%20mau%20tanya%20pesanan%20Candy%20Crepes" target="_blank" rel="noopener noreferrer" class="inline-flex flex-col items-center justify-center gap-1 w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl shadow-lg transition-all">
+              <span class="flex items-center gap-1.5">
+                <span>💬</span>
+                <span>Chat WhatsApp Mbak Pie</span>
+              </span>
+              <span class="text-xs text-emerald-100 font-semibold">+62 857-3174-5854</span>
             </a>
           </div>
         </div>
@@ -743,6 +747,7 @@
       </div>
       <div class="text-xs text-slate-500 text-center sm:text-right">
         <p>© 2026 Candy Crepes Mbak Pie. Renyah, Lumer &amp; Bikin Happy! Pemesanan Online Dadakan.</p>
+        <p class="text-slate-400 mt-1">📞 WhatsApp Pemesanan: <a href="https://wa.me/6285731745854" class="text-amber-300 font-bold hover:underline">+62 857-3174-5854</a></p>
         <button type="button" id="footer-owner-btn" class="mt-2 text-xs text-amber-300 hover:text-amber-200 underline font-semibold inline-flex items-center gap-1">
           <span>📊</span>
           <span>Portal Laporan Penjualan Owner (Pengganti Kertas)</span>
@@ -1445,6 +1450,9 @@
         img.src = encodedSvg;
       }
     }
+
+    const SELLER_PHONE_RAW = '+62 857-3174-5854';
+    const SELLER_PHONE_WA = '6285731745854';
 
     // --- All 14 Official Menu Items from Mbak Pie's Stall Banner ---
     const MENU_ITEMS = [
@@ -2664,7 +2672,7 @@
         `Catatan: Laporan otomatis sistem digital Candy Crepes Mbak Pie (Pengganti Kertas Manual).`
       ];
 
-      const waUrl = `https://wa.me/6281234567890?text=${encodeURIComponent(lines.join('\n'))}`;
+      const waUrl = `https://wa.me/${SELLER_PHONE_WA}?text=${encodeURIComponent(lines.join('\n'))}`;
       window.open(waUrl, '_blank', 'noopener,noreferrer');
       showToast('Rekap Penjualan Dibuat!', 'Membuka WhatsApp untuk mengirim laporan ke owner.', '📲');
     }
@@ -2785,7 +2793,7 @@
         };
         saveSaleTransaction(newSaleTrx);
 
-        const waUrl = `https://wa.me/6281234567890?text=${encodeURIComponent(lines.join('\n'))}`;
+        const waUrl = `https://wa.me/${SELLER_PHONE_WA}?text=${encodeURIComponent(lines.join('\n'))}`;
         window.open(waUrl, '_blank', 'noopener,noreferrer');
         document.getElementById('checkout-modal-backdrop').classList.add('hidden');
         showToast('Pesanan Masuk & Dicatat!', 'Membuka WhatsApp dan mencatat pesanan ke laporan penjualan owner.', '🚀');
