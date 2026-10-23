@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#581c87">
+  <title>Portal Kasir & Laporan Penjualan — Candy Crepes Mbak Pie</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              purple: '#581c87',
+              darkPurple: '#3b0764',
+              lightPurple: '#7e22ce',
+              softPurple: '#f3e8ff',
+              yellow: '#facc15',
+              warmYellow: '#eab308',
+              cream: '#fffbeb'
+            }
+          },
+          fontFamily: {
+            display: ['Fredoka', 'cursive', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Print Receipt Thermal Styling (58mm/80mm) */
+    @media print {
+      body > * {
+        display: none !important;
+      }
+      #receipt-modal, #receipt-modal * {
+        display: block !important;
+        visibility: visible !important;
+      }
+      #receipt-modal {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        z-index: 999999 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      #receipt-print-area {
+        width: 100% !important;
+        max-width: 340px !important;
+        margin: 0 auto !important;
+        padding: 10px !important;
+        border: none !important;
+        color: #000 !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+  <!-- ==================== SECURITY PIN AUTH OVERLAY ==================== -->
+  <div id="pin-overlay" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl border border-purple-200">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-purple-100 text-brand-purple flex items-center justify-center text-3xl shadow-inner">
+        🔒
+      </div>
+      <div>
+        <h2 class="font-display font-bold text-xl text-slate-900">Portal Khusus Penjual</h2>
+        <p class="text-xs text-slate-500 mt-1">
+          Masukkan PIN Keamanan untuk membuka data pembukuan &amp; kasir gerobak.
+        </p>
+      </div>
+
+      <form id="pin-form" class="space-y-3.5">
+        <div>
+          <input type="password" id="pin-input" maxlength="8" placeholder="PIN Default: 1234" required autofocus class="w-full text-center text-xl tracking-widest font-mono font-bold p-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-brand-purple focus:outline-none">
+          <p id="pin-error" class="text-xs text-rose-600 font-semibold mt-1 hidden">⚠️ PIN salah! Silakan coba lagi.</p>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-brand-purple hover:bg-brand-darkPurple text-white font-bold text-sm rounded-xl shadow-lg transition">
+          Buka Panel Penjual
+        </button>
+      </form>
+      <div class="pt-2 border-t border-slate-100">
+        <a href="/" class="text-xs text-purple-700 hover:underline">← Kembali ke Halaman Toko Pembeli</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN OWNER DASHBOARD ==================== -->
+  <div id="owner-app" class="flex-1 flex flex-col">
+    
+    <!-- Top Header -->
+    <header class="bg-gradient-to-r from-brand-darkPurple via-brand-purple to-purple-900 text-white shadow-md sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-2xl shadow-inner">
+            🥞
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="font-display font-extrabold text-lg sm:text-xl text-white">CANDY CREPES</h1>
+              <span class="bg-amber-400 text-brand-darkPurple text-[10px] font-black uppercase px-2 py-0.5 rounded-full">
+                POS &amp; KASIR OWNER
+              </span>
+            </div>
+            <p class="text-xs text-purple-200">Gerobak Mbak Pie • +62 857-3174-5854</p>
+          </div>
+        </div>
+
+        <!-- Quick Top Actions -->
+        <div class="flex items-center gap-2">
+          <button type="button" id="toggle-stall-btn" class="px-3 py-1.5 rounded-xl font-bold text-xs transition shadow flex items-center gap-1.5">
+            <!-- Dynamic: BUKA / TUTUP -->
+          </button>
+          <button type="button" id="open-quick-pos-btn" class="px-3.5 py-1.5 bg-brand-yellow hover:bg-amber-400 text-brand-darkPurple font-extrabold text-xs sm:text-sm rounded-xl shadow transition flex items-center gap-1.5">
+            <span>➕</span>
+            <span>+ Catat Pesanan</span>
+          </button>
+          <button type="button" id="lock-btn" class="p-2 rounded-xl bg-white/15 hover:bg-white/25 text-white transition" title="Kunci Panel">
+            🔒
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Body -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1 w-full">
+      
+      <!-- Filter Bar & Export Actions -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-purple-100 shadow-sm">
+        <div class="flex flex-wrap items-center gap-1.5" id="period-tabs">
+          <button type="button" data-period="today" class="period-tab active px-3.5 py-1.5 rounded-xl text-xs font-bold bg-brand-purple text-white shadow-sm transition">
+            📅 Hari Ini
+          </button>
+          <button type="button" data-period="week" class="period-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-purple-50 text-slate-700 transition">
+            🗓️ 7 Hari Terakhir
+          </button>
+          <button type="button" data-period="month" class="period-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-purple-50 text-slate-700 transition">
+            📆 Bulan Ini
+          </button>
+          <button type="button" data-period="all" class="period-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-purple-50 text-slate-700 transition">
+            📂 Semua Riwayat
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button type="button" id="send-wa-report-btn" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-sm">
+            <span>📲</span>
+            <span>Kirim Rekap ke WA</span>
+          </button>
+          <button type="button" id="download-csv-btn" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-sm">
+            <span>📥</span>
+            <span>Unduh Excel (CSV)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Metric Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        
+        <!-- Total Omzet -->
+        <div class="bg-gradient-to-br from-purple-900 to-brand-purple text-white p-4 sm:p-5 rounded-2xl shadow-md space-y-1 relative overflow-hidden">
+          <div class="absolute -right-2 -bottom-2 text-5xl opacity-15">💰</div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-purple-200">Total Omzet Penjualan</span>
+          <div id="stat-total-omzet" class="text-xl sm:text-2xl font-display font-black text-amber-300">Rp 0</div>
+          <p class="text-[11px] text-purple-200" id="stat-period-info">Penjualan Terkonfirmasi</p>
+        </div>
+
+        <!-- Total Porsi -->
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-purple-100 shadow-sm space-y-1 relative overflow-hidden">
+          <div class="absolute -right-2 -bottom-2 text-5xl opacity-10">🥞</div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Porsi Terjual</span>
+          <div id="stat-total-porsi" class="text-xl sm:text-2xl font-display font-black text-brand-purple">0 Porsi</div>
+          <p class="text-[11px] text-slate-500" id="stat-total-trx">0 Transaksi Sukses</p>
+        </div>
+
+        <!-- Uang Tunai / Kas Laci -->
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-emerald-100 shadow-sm space-y-1 relative overflow-hidden">
+          <div class="absolute -right-2 -bottom-2 text-5xl opacity-10">💵</div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Tunai (Kas Laci Gerobak)</span>
+          <div id="stat-cash-total" class="text-xl sm:text-2xl font-display font-black text-emerald-600">Rp 0</div>
+          <p class="text-[11px] text-slate-500" id="stat-cash-count">0 transaksi tunai</p>
+        </div>
+
+        <!-- Saldo QRIS -->
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-indigo-100 shadow-sm space-y-1 relative overflow-hidden">
+          <div class="absolute -right-2 -bottom-2 text-5xl opacity-10">📱</div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700">QRIS / Non-Tunai</span>
+          <div id="stat-qris-total" class="text-xl sm:text-2xl font-display font-black text-indigo-600">Rp 0</div>
+          <p class="text-[11px] text-slate-500" id="stat-qris-count">0 transaksi QRIS</p>
+        </div>
+
+      </div>
+
+      <!-- Menu Terlaris & Rekonsiliasi Kas -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        
+        <!-- Best Sellers -->
+        <div class="lg:col-span-7 bg-white p-4 sm:p-5 rounded-2xl border border-purple-100 shadow-sm space-y-3">
+          <div class="flex items-center justify-between border-b border-purple-100 pb-2.5">
+            <h3 class="font-display font-bold text-slate-800 text-sm sm:text-base flex items-center gap-1.5">
+              <span>🏆</span>
+              <span>Varian Paling Laris (Best Seller)</span>
+            </h3>
+            <span class="text-[11px] text-slate-400">Panduan belanja topping</span>
+          </div>
+          <div id="best-seller-bars" class="space-y-2.5 max-h-56 overflow-y-auto pr-1"></div>
+        </div>
+
+        <!-- Pencocokan Uang Kas Gerobak -->
+        <div class="lg:col-span-5 bg-gradient-to-br from-amber-50 to-orange-50/60 p-4 sm:p-5 rounded-2xl border border-amber-200/80 shadow-sm space-y-3">
+          <div class="flex items-center justify-between border-b border-amber-200 pb-2.5">
+            <h3 class="font-display font-bold text-amber-900 text-sm sm:text-base flex items-center gap-1.5">
+              <span>📋</span>
+              <span>Pencocokan Kas Gerobak</span>
+            </h3>
+            <span class="text-[10px] bg-amber-200 text-amber-900 font-extrabold px-2 py-0.5 rounded-full">CEK FISIK</span>
+          </div>
+          <div class="text-xs text-amber-950 space-y-2">
+            <div class="flex justify-between items-center py-1.5 border-b border-amber-200/50">
+              <span class="text-slate-600">Uang Fisik di Laci:</span>
+              <span class="font-bold text-emerald-700 text-sm" id="reconcile-cash">Rp 0</span>
+            </div>
+            <div class="flex justify-between items-center py-1.5 border-b border-amber-200/50">
+              <span class="text-slate-600">Saldo QRIS Rekening:</span>
+              <span class="font-bold text-indigo-700 text-sm" id="reconcile-qris">Rp 0</span>
+            </div>
+            <div class="flex justify-between items-center py-1.5 font-bold">
+              <span>Total Setoran Hari Ini:</span>
+              <span class="text-brand-purple text-base" id="reconcile-total">Rp 0</span>
+            </div>
+            <p class="text-[11px] text-slate-500 pt-1 leading-relaxed">
+              💡 <em>Tips Mbak Pie:</em> Hitung uang kertas di laci sebelum tutup gerobak dan cocokkan dengan angka hijau di atas.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Menu Stock Availability Manager -->
+      <div class="bg-white rounded-2xl border border-purple-100 shadow-sm p-4 sm:p-5 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-purple-100 pb-2.5">
+          <div>
+            <h3 class="font-display font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
+              <span>📦</span>
+              <span>Kelola Stok Menu (Tandai Habis / Ready)</span>
+            </h3>
+            <p class="text-xs text-slate-500">Klik tombol untuk menonaktifkan menu jika bahan topping habis</p>
+          </div>
+          <span class="text-[11px] text-purple-700 bg-purple-50 px-2.5 py-1 rounded-lg font-semibold">14 Varian Resmi</span>
+        </div>
+        <div id="stock-manager-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 pt-1 max-h-52 overflow-y-auto"></div>
+      </div>
+
+      <!-- Transaction Log Table -->
+      <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden space-y-3 p-4 sm:p-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-3">
+          <div>
+            <h3 class="font-display font-bold text-slate-900 text-base flex items-center gap-2">
+              <span>🧾 Riwayat Transaksi Konkret</span>
+              <span id="trx-badge-count" class="text-xs bg-purple-100 text-brand-purple px-2 py-0.5 rounded-full font-bold">0 transaksi</span>
+            </h3>
+            <p class="text-xs text-slate-500">Pencatatan real-time otomatis dari pemesanan online &amp; kasir</p>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <input type="text" id="search-trx-input" placeholder="Cari nama / menu..." class="text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-purple focus:outline-none w-44">
+            <button type="button" id="wipe-demo-data-btn" class="text-xs text-rose-600 hover:text-rose-800 font-semibold px-2 py-1 rounded-lg hover:bg-rose-50 transition" title="Kosongkan data demo">
+              🧹 Kosongkan Data Demo
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto max-h-80 overflow-y-auto">
+          <table class="w-full text-left text-xs text-slate-700">
+            <thead class="bg-purple-50/80 text-brand-darkPurple uppercase text-[10px] font-extrabold sticky top-0">
+              <tr>
+                <th class="py-2.5 px-3 rounded-l-lg">Waktu</th>
+                <th class="py-2.5 px-3">Tipe</th>
+                <th class="py-2.5 px-3">Pemesan</th>
+                <th class="py-2.5 px-3">Rincian Menu</th>
+                <th class="py-2.5 px-3">Bayar</th>
+                <th class="py-2.5 px-3 text-right">Total</th>
+                <th class="py-2.5 px-3 text-center rounded-r-lg">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="trx-table-body" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 px-4 text-center sm:text-left text-xs text-slate-500">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span>👑 Candy Crepes Mbak Pie — Portal Kasir Digital</span>
+          <span>•</span>
+          <button type="button" id="change-pin-btn" class="text-brand-purple hover:underline font-semibold">Ubah PIN Keamanan</button>
+        </div>
+        <a href="/" class="text-purple-700 hover:underline font-medium">← Buka Halaman Toko Pembeli</a>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ==================== QUICK OFFLINE KASIR MODAL ==================== -->
+  <div id="quick-pos-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-purple-100 p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-purple-100 pb-3">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-brand-purple">Kasir Cepat Gerobak</span>
+          <h3 class="font-display font-bold text-xl text-slate-900">Catat Penjualan Langsung (Offline)</h3>
+        </div>
+        <button type="button" id="close-quick-pos-btn" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl">✕</button>
+      </div>
+
+      <form id="quick-pos-form" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Menu Crepes *</label>
+          <select id="quick-menu-select" required class="w-full text-xs sm:text-sm p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-purple focus:outline-none font-medium"></select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Jumlah Porsi *</label>
+            <input type="number" id="quick-qty-input" min="1" max="50" value="1" required class="w-full text-xs sm:text-sm p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-purple focus:outline-none font-bold text-center">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Metode Pembayaran *</label>
+            <select id="quick-pay-select" class="w-full text-xs sm:text-sm p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-purple focus:outline-none font-bold text-brand-purple">
+              <option value="Tunai">💵 Tunai (Cash Laci)</option>
+              <option value="QRIS">📱 QRIS / Rekening</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Nama Pembeli (Opsional)</label>
+          <input type="text" id="quick-cust-name" placeholder="Contoh: Mas Budi / Pelanggan Gerobak" class="w-full text-xs sm:text-sm p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-purple focus:outline-none">
+        </div>
+
+        <div class="bg-purple-50 p-3 rounded-xl border border-purple-100 flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-700">Total Harga:</span>
+          <span id="quick-calc-price" class="font-display font-extrabold text-xl text-brand-purple">Rp 9.000</span>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 bg-brand-purple hover:bg-brand-darkPurple text-white font-display font-bold text-sm rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
+          <span>💾</span>
+          <span>Simpan ke Laporan Penjualan</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== RECEIPT MODAL (THERMAL 58mm) ==================== -->
+  <div id="receipt-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[70] hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full shadow-2xl border border-purple-100 p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-2 no-print">
+        <h4 class="font-display font-bold text-slate-900 text-sm">🖨️ Struk Transaksi Digital</h4>
+        <button type="button" id="close-receipt-btn" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg">✕</button>
+      </div>
+
+      <div id="receipt-print-area" class="bg-slate-50 p-4 rounded-2xl border border-dashed border-slate-300 font-mono text-xs text-slate-800 space-y-3">
+        <div class="text-center space-y-0.5 border-b border-dashed border-slate-300 pb-2.5">
+          <h3 class="font-bold text-sm text-slate-900 uppercase tracking-wider">CANDY CREPES</h3>
+          <p class="text-[11px] text-slate-600">Gerobak Crepes Crispy Mbak Pie</p>
+          <p class="text-[10px] text-slate-500">WA: +62 857-3174-5854</p>
+        </div>
+
+        <div class="text-[11px] space-y-0.5 text-slate-600 border-b border-dashed border-slate-300 pb-2">
+          <div class="flex justify-between">
+            <span>No. Trx:</span>
+            <span id="rcpt-id" class="font-bold text-slate-800">TRX-000000</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Waktu:</span>
+            <span id="rcpt-time">23/10/2026 15:30</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Tipe:</span>
+            <span id="rcpt-type">Kasir Gerobak</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Pelanggan:</span>
+            <span id="rcpt-cust">Umum</span>
+          </div>
+        </div>
+
+        <div id="rcpt-items-list" class="space-y-1.5 border-b border-dashed border-slate-300 pb-2.5"></div>
+
+        <div class="space-y-1 text-xs pt-1">
+          <div class="flex justify-between font-bold text-slate-900 text-sm">
+            <span>TOTAL:</span>
+            <span id="rcpt-total">Rp 0</span>
+          </div>
+          <div class="flex justify-between text-[11px] text-slate-600">
+            <span>Metode Bayar:</span>
+            <span id="rcpt-payment" class="font-bold">Tunai</span>
+          </div>
+        </div>
+
+        <div class="text-center text-[10px] text-slate-500 pt-2 border-t border-dashed border-slate-300 space-y-0.5">
+          <p>Terima kasih sudah jajan! 🙏</p>
+          <p class="font-semibold text-purple-700">"happy with • crepes!" 🥞✨</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 pt-1 no-print">
+        <button type="button" id="print-receipt-btn" class="py-2.5 bg-brand-purple hover:bg-brand-darkPurple text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
+          <span>🖨️</span>
+          <span>Cetak / Print</span>
+        </button>
+        <button type="button" id="share-receipt-btn" class="py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
+          <span>📲</span>
+          <span>Kirim ke WA</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="owner-toast" class="fixed top-5 right-5 z-[9999] hidden flex items-center gap-3 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-purple-500/30 transition-all max-w-sm">
+    <div id="toast-icon" class="text-2xl">✨</div>
+    <div>
+      <h5 id="toast-title" class="font-bold text-xs text-amber-300">Notifikasi</h5>
+      <p id="toast-desc" class="text-xs text-slate-200">Keterangan pesan</p>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    const SELLER_PHONE_WA = '6285731745854';
+    const SALES_STORAGE_KEY = 'candy_crepes_sales_v1';
+    const STALL_STATUS_KEY = 'candy_stall_status_v1';
+    const MENU_SOLDOUT_KEY = 'candy_soldout_menu_v1';
+    const OWNER_PIN_KEY = 'candy_owner_pin_code';
+
+    let currentSalesPeriod = 'today';
+    let activeReceiptTrx = null;
+
+    const MENU_ITEMS = [
+      { id: 'chococheese', name: 'Chococheese Crispy', price: 9000 },
+      { id: 'chocomelt', name: 'Chocomelt Banana', price: 10000 },
+      { id: 'chocomarsh', name: 'Choco Marshmallow', price: 10000 },
+      { id: 'chococrunch', name: 'Choco Banana Crunch', price: 10000 },
+      { id: 'milooreo', name: 'Milo Oreo Crunchy', price: 9000 },
+      { id: 'matchamilk', name: 'Matchamilk Crunchy', price: 10000 },
+      { id: 'strawcheese', name: 'Strawberry Cheese', price: 9000 },
+      { id: 'strawchoco', name: 'Strawberry Choco', price: 9000 },
+      { id: 'strawdelight', name: 'Strawberry Delight', price: 8000 },
+      { id: 'bluechoco', name: 'Blueberry Choco', price: 9000 },
+      { id: 'bluecheese', name: 'Blueberry Cheese', price: 10000 },
+      { id: 'cheesemilk', name: 'Cheese Milk Gurih', price: 8000 },
+      { id: 'doublecheese', name: 'Double Cheese Spesial', price: 11000 },
+      { id: 'chocokacang', name: 'Choco Kacang Lumer', price: 9000 }
+    ];
+
+    function formatRupiah(num) {
+      return 'Rp ' + Number(num || 0).toLocaleString('id-ID');
+    }
+
+    function showToast(title, desc, icon = '✨') {
+      const toast = document.getElementById('owner-toast');
+      document.getElementById('toast-title').textContent = title;
+      document.getElementById('toast-desc').textContent = desc;
+      document.getElementById('toast-icon').textContent = icon;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3500);
+    }
+
+    // --- PIN & Security ---
+    const getOwnerPIN = () => localStorage.getItem(OWNER_PIN_KEY) || '1234';
+    const isOwnerAuth = () => sessionStorage.getItem('candy_owner_auth') === 'true';
+
+    function checkAuth() {
+      if (isOwnerAuth()) {
+        document.getElementById('pin-overlay').classList.add('hidden');
+        renderDashboard();
+      } else {
+        document.getElementById('pin-overlay').classList.remove('hidden');
+        document.getElementById('pin-input').value = '';
+        setTimeout(() => document.getElementById('pin-input').focus(), 150);
+      }
+    }
+
+    document.getElementById('pin-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const entered = document.getElementById('pin-input').value.trim();
+      if (entered === getOwnerPIN()) {
+        sessionStorage.setItem('candy_owner_auth', 'true');
+        document.getElementById('pin-overlay').classList.add('hidden');
+        renderDashboard();
+        showToast('Akses Terbuka', 'Selamat datang di Panel Kasir Mbak Pie.', '👑');
+      } else {
+        document.getElementById('pin-error').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('lock-btn').addEventListener('click', () => {
+      sessionStorage.removeItem('candy_owner_auth');
+      checkAuth();
+      showToast('Terkunci', 'Panel telah dikunci demi keamanan.', '🔒');
+    });
+
+    document.getElementById('change-pin-btn').addEventListener('click', () => {
+      const newPin = prompt('Masukkan PIN Baru (angka 4-8 digit):', getOwnerPIN());
+      if (newPin && newPin.trim().length >= 4) {
+        localStorage.setItem(OWNER_PIN_KEY, newPin.trim());
+        showToast('PIN Berubah!', `PIN keamanan baru: ${newPin.trim()}`, '🔑');
+      } else if (newPin !== null) {
+        alert('PIN minimal harus 4 digit.');
+      }
+    });
+
+    // --- Stall Status ---
+    function getStallStatus() {
+      return localStorage.getItem(STALL_STATUS_KEY) || 'open';
+    }
+
+    function toggleStallStatus() {
+      const next = getStallStatus() === 'open' ? 'closed' : 'open';
+      localStorage.setItem(STALL_STATUS_KEY, next);
+      updateStallUI();
+      showToast(
+        next === 'open' ? 'Gerobak DIBUKA' : 'Gerobak DITUTUP',
+        next === 'open' ? 'Toko kini menerima pesanan di website.' : 'Toko kini ditandai tutup / habis.',
+        next === 'open' ? '🟢' : '🔴'
+      );
+    }
+
+    function updateStallUI() {
+      const status = getStallStatus();
+      const btn = document.getElementById('toggle-stall-btn');
+      if (status === 'open') {
+        btn.innerHTML = '<span>🟢</span><span>Gerobak: BUKA</span>';
+        btn.className = 'px-3 py-1.5 rounded-xl font-bold text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 hover:bg-emerald-200 transition shadow-sm flex items-center gap-1.5';
+      } else {
+        btn.innerHTML = '<span>🔴</span><span>Gerobak: TUTUP</span>';
+        btn.className = 'px-3 py-1.5 rounded-xl font-bold text-xs bg-rose-100 text-rose-900 border border-rose-300 hover:bg-rose-200 transition shadow-sm flex items-center gap-1.5';
+      }
+    }
+
+    document.getElementById('toggle-stall-btn').addEventListener('click', toggleStallStatus);
+
+    // --- Menu Stock Manager ---
+    function getSoldOutMenuIds() {
+      try {
+        return JSON.parse(localStorage.getItem(MENU_SOLDOUT_KEY)) || [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function toggleMenuStock(id) {
+      let ids = getSoldOutMenuIds();
+      if (ids.includes(id)) {
+        ids = ids.filter(x => x !== id);
+        showToast('Menu Ready', 'Menu aktif kembali di katalog pelanggan.', '✅');
+      } else {
+        ids.push(id);
+        showToast('Menu Habis', 'Menu ditandai habis di website.', '⚠️');
+      }
+      localStorage.setItem(MENU_SOLDOUT_KEY, JSON.stringify(ids));
+      renderStockManager();
+    }
+
+    function renderStockManager() {
+      const container = document.getElementById('stock-manager-grid');
+      const soldOutIds = getSoldOutMenuIds();
+
+      container.innerHTML = MENU_ITEMS.map(item => {
+        const isSoldOut = soldOutIds.includes(item.id);
+        return `
+          <div class="p-2.5 rounded-xl border flex items-center justify-between gap-1.5 ${isSoldOut ? 'bg-rose-50 border-rose-200' : 'bg-slate-50 border-slate-200'}">
+            <div class="truncate">
+              <span class="font-bold text-xs block truncate ${isSoldOut ? 'text-rose-900 line-through' : 'text-slate-800'}">${item.name}</span>
+              <span class="text-[10px] text-slate-500">${formatRupiah(item.price)}</span>
+            </div>
+            <button type="button" class="stock-btn shrink-0 px-2 py-1 rounded text-[10px] font-extrabold transition ${isSoldOut ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'}" data-id="${item.id}">
+              ${isSoldOut ? 'HABIS' : 'READY'}
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.stock-btn').forEach(btn => {
+        btn.addEventListener('click', () => toggleMenuStock(btn.dataset.id));
+      });
+    }
+
+    // --- Sales Data & Reporting ---
+    function getSalesRecords() {
+      try {
+        const raw = localStorage.getItem(SALES_STORAGE_KEY);
+        if (!raw) {
+          const now = new Date();
+          const pad = n => String(n).padStart(2, '0');
+          const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+          const seed = [
+            { id: 'POS-001', date: todayStr, time: '15:20', type: 'Kasir Gerobak', customerName: 'Mas Budi (Offline)', items: [{ name: 'Chococheese Crispy', qty: 2, price: 18000 }], totalQty: 2, paymentMethod: 'Tunai', total: 18000 },
+            { id: 'WA-002', date: todayStr, time: '16:15', type: 'Online WA', customerName: 'Rina (Online)', items: [{ name: 'Choco Banana Crunch', qty: 1, price: 10000 }], totalQty: 1, paymentMethod: 'QRIS', total: 10000 },
+            { id: 'POS-003', date: todayStr, time: '17:00', type: 'Kasir Gerobak', customerName: 'Ibu Ratna', items: [{ name: 'Matchamilk Crunchy', qty: 1, price: 10000 }], totalQty: 1, paymentMethod: 'Tunai', total: 10000 }
+          ];
+          localStorage.setItem(SALES_STORAGE_KEY, JSON.stringify(seed));
+          return seed;
+        }
+        return JSON.parse(raw) || [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveSale(sale) {
+      const all = getSalesRecords();
+      all.unshift(sale);
+      localStorage.setItem(SALES_STORAGE_KEY, JSON.stringify(all));
+      renderDashboard();
+    }
+
+    function deleteSale(id) {
+      if (!confirm('Hapus transaksi ini dari laporan?')) return;
+      let all = getSalesRecords().filter(t => t.id !== id);
+      localStorage.setItem(SALES_STORAGE_KEY, JSON.stringify(all));
+      renderDashboard();
+      showToast('Dihapus', 'Transaksi dihapus.', '🗑️');
+    }
+
+    function filterSales(records, period) {
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+      if (period === 'today') return records.filter(r => r.date === todayStr);
+      if (period === 'week') {
+        const limit = new Date(now.getTime() - 7 * 86400000);
+        return records.filter(r => new Date(r.date) >= limit);
+      }
+      if (period === 'month') {
+        const curM = `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
+        return records.filter(r => r.date && r.date.startsWith(curM));
+      }
+      return records;
+    }
+
+    function renderDashboard() {
+      updateStallUI();
+      renderStockManager();
+
+      const all = getSalesRecords();
+      const query = (document.getElementById('search-trx-input')?.value || '').toLowerCase().trim();
+      let filtered = filterSales(all, currentSalesPeriod);
+
+      if (query) {
+        filtered = filtered.filter(t => {
+          const items = (t.items || []).map(i => i.name).join(' ').toLowerCase();
+          return (t.customerName || '').toLowerCase().includes(query) || items.includes(query) || (t.id || '').toLowerCase().includes(query);
+        });
+      }
+
+      let omzet = 0, porsi = 0, cash = 0, cashCount = 0, qris = 0, qrisCount = 0;
+      const flavors = {};
+
+      filtered.forEach(t => {
+        omzet += (t.total || 0);
+        porsi += (t.totalQty || 1);
+        if ((t.paymentMethod || '').toLowerCase().includes('tunai') || (t.paymentMethod || '').toLowerCase().includes('cash')) {
+          cash += (t.total || 0);
+          cashCount++;
+        } else {
+          qris += (t.total || 0);
+          qrisCount++;
+        }
+        (t.items || []).forEach(i => {
+          flavors[i.name] = (flavors[i.name] || 0) + (i.qty || 1);
+        });
+      });
+
+      document.getElementById('stat-total-omzet').textContent = formatRupiah(omzet);
+      document.getElementById('stat-total-porsi').textContent = `${porsi} Porsi`;
+      document.getElementById('stat-total-trx').textContent = `${filtered.length} Transaksi Sukses`;
+      document.getElementById('stat-cash-total').textContent = formatRupiah(cash);
+      document.getElementById('stat-cash-count').textContent = `${cashCount} transaksi tunai`;
+      document.getElementById('stat-qris-total').textContent = formatRupiah(qris);
+      document.getElementById('stat-qris-count').textContent = `${qrisCount} transaksi QRIS`;
+
+      document.getElementById('reconcile-cash').textContent = formatRupiah(cash);
+      document.getElementById('reconcile-qris').textContent = formatRupiah(qris);
+      document.getElementById('reconcile-total').textContent = formatRupiah(omzet);
+      document.getElementById('trx-badge-count').textContent = `${filtered.length} transaksi`;
+
+      // Best Sellers
+      const bestSellersContainer = document.getElementById('best-seller-bars');
+      const sorted = Object.entries(flavors).sort((a, b) => b[1] - a[1]);
+      if (sorted.length === 0) {
+        bestSellersContainer.innerHTML = '<p class="text-xs text-slate-400 py-3 text-center">Belum ada penjualan di periode ini.</p>';
+      } else {
+        const max = sorted[0][1] || 1;
+        bestSellersContainer.innerHTML = sorted.map(([name, count], idx) => `
+          <div class="space-y-1">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-slate-700 flex items-center gap-1.5">
+                <span class="w-4 h-4 rounded-full bg-purple-100 text-brand-purple font-black text-[10px] flex items-center justify-center">${idx + 1}</span>
+                <span>${name}</span>
+              </span>
+              <span class="font-extrabold text-brand-purple">${count} porsi</span>
+            </div>
+            <div class="w-full bg-purple-100 rounded-full h-2 overflow-hidden">
+              <div class="bg-gradient-to-r from-brand-purple to-amber-400 h-2 rounded-full" style="width: ${Math.round((count / max) * 100)}%"></div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Transactions Table
+      const tbody = document.getElementById('trx-table-body');
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-400 text-xs">Tidak ada riwayat transaksi.</td></tr>';
+      } else {
+        tbody.innerHTML = filtered.map(t => {
+          const isCash = (t.paymentMethod || '').toLowerCase().includes('tunai') || (t.paymentMethod || '').toLowerCase().includes('cash');
+          const isKasir = (t.type || '').includes('Kasir');
+          const itemsStr = (t.items || []).map(i => `${i.qty}x ${i.name}`).join(', ');
+
+          return `
+            <tr class="hover:bg-purple-50/50 transition">
+              <td class="py-2.5 px-3 font-semibold text-slate-500 whitespace-nowrap">
+                <div>${t.time || '-'}</div>
+                <div class="text-[10px] text-slate-400">${t.date || ''}</div>
+              </td>
+              <td class="py-2.5 px-3">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isKasir ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-purple-100 text-purple-900 border border-purple-200'}">
+                  ${t.type || 'Kasir'}
+                </span>
+              </td>
+              <td class="py-2.5 px-3 font-bold text-slate-800">${t.customerName || 'Pelanggan'}</td>
+              <td class="py-2.5 px-3 text-slate-600 max-w-xs truncate" title="${itemsStr}">${itemsStr || '-'}</td>
+              <td class="py-2.5 px-3">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isCash ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800'}">
+                  ${t.paymentMethod || 'Tunai'}
+                </span>
+              </td>
+              <td class="py-2.5 px-3 text-right font-display font-bold text-brand-purple whitespace-nowrap">
+                ${formatRupiah(t.total || 0)}
+              </td>
+              <td class="py-2.5 px-3 text-center whitespace-nowrap">
+                <button type="button" class="rcpt-btn px-2 py-1 bg-purple-100 hover:bg-purple-200 text-brand-purple rounded-lg font-bold text-[11px] transition mr-1" data-id="${t.id}" title="Cetak Struk">
+                  🖨️ Struk
+                </button>
+                <button type="button" class="del-btn text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1 rounded transition" data-id="${t.id}" title="Hapus">
+                  🗑️
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        tbody.querySelectorAll('.rcpt-btn').forEach(b => {
+          b.addEventListener('click', () => openReceipt(b.dataset.id));
+        });
+        tbody.querySelectorAll('.del-btn').forEach(b => {
+          b.addEventListener('click', () => deleteSale(b.dataset.id));
+        });
+      }
+    }
+
+    // --- Period Tabs & Search ---
+    document.querySelectorAll('#period-tabs .period-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('#period-tabs .period-tab').forEach(t => {
+          t.className = 'period-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-purple-50 text-slate-700 transition';
+        });
+        tab.className = 'period-tab active px-3.5 py-1.5 rounded-xl text-xs font-bold bg-brand-purple text-white shadow-sm transition';
+        currentSalesPeriod = tab.dataset.period;
+        renderDashboard();
+      });
+    });
+
+    document.getElementById('search-trx-input').addEventListener('input', renderDashboard);
+
+    // --- Wipe Demo Data ---
+    document.getElementById('wipe-demo-data-btn').addEventListener('click', () => {
+      if (confirm('Kosongkan semua data penjualan demo ini?\n\nData akan menjadi 0 transaksi & siap digunakan hari pertama.')) {
+        localStorage.setItem(SALES_STORAGE_KEY, JSON.stringify([]));
+        renderDashboard();
+        showToast('Data Dibersihkan!', 'Laporan penjualan kini bersih (0 transaksi).', '🧹');
+      }
+    });
+
+    // --- Export WA Report ---
+    document.getElementById('send-wa-report-btn').addEventListener('click', () => {
+      const all = getSalesRecords();
+      const filtered = filterSales(all, currentSalesPeriod);
+      let omzet = 0, porsi = 0, cash = 0, cashC = 0, qris = 0, qrisC = 0;
+      const flavors = {};
+
+      filtered.forEach(t => {
+        omzet += (t.total || 0);
+        porsi += (t.totalQty || 1);
+        if ((t.paymentMethod || '').toLowerCase().includes('tunai')) {
+          cash += (t.total || 0); cashC++;
+        } else {
+          qris += (t.total || 0); qrisC++;
+        }
+        (t.items || []).forEach(i => {
+          flavors[i.name] = (flavors[i.name] || 0) + (i.qty || 1);
+        });
+      });
+
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const dateStr = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()}`;
+      const top3 = Object.entries(flavors).sort((a,b) => b[1]-a[1]).slice(0, 3).map(([n, q], i) => `  ${i+1}. ${n}: ${q} porsi`).join('\n') || '  (Belum ada data)';
+
+      const lines = [
+        `📊 *LAPORAN PENJUALAN CANDY CREPES MBAK PIE*`,
+        `📅 *Tanggal:* ${dateStr} (${timeStr} WIB)`,
+        `----------------------------------------`,
+        `💰 *TOTAL OMZET:* ${formatRupiah(omzet)}`,
+        `🥞 *Total Porsi:* ${porsi} Porsi`,
+        `🧾 *Total Transaksi:* ${filtered.length} Struk`,
+        ``,
+        `💳 *RINCIAN KAS:*`,
+        `💵 *Tunai Laci Gerobak:* ${formatRupiah(cash)} (${cashC} trx)`,
+        `📱 *QRIS Rekening:* ${formatRupiah(qris)} (${qrisC} trx)`,
+        ``,
+        `🏆 *TOP MENU TERLARIS:*`,
+        top3,
+        `----------------------------------------`,
+        `Catatan: Rekap resmi otomatis pembukuan Candy Crepes.`
+      ];
+
+      const url = `https://wa.me/${SELLER_PHONE_WA}?text=${encodeURIComponent(lines.join('\n'))}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+      showToast('Rekap Dibuat', 'Membuka WhatsApp untuk mengirim laporan.', '📲');
+    });
+
+    // --- Export CSV ---
+    document.getElementById('download-csv-btn').addEventListener('click', () => {
+      const filtered = filterSales(getSalesRecords(), currentSalesPeriod);
+      if (filtered.length === 0) {
+        alert('Tidak ada transaksi untuk diunduh.');
+        return;
+      }
+      let csv = '\uFEFFID,Tanggal,Waktu,Tipe,Pelanggan,Menu,Porsi,Bayar,Total_Rp\n';
+      filtered.forEach(t => {
+        const items = (t.items || []).map(i => `${i.qty}x ${i.name}`).join('; ');
+        csv += `${t.id || ''},${t.date || ''},${t.time || ''},"${t.type || ''}","${t.customerName || ''}","${items}",${t.totalQty || 1},${t.paymentMethod || 'Tunai'},${t.total || 0}\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `laporan-penjualan-candy-crepes-${currentSalesPeriod}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('CSV Diunduh', 'Bisa dibuka langsung di Microsoft Excel.', '📥');
+    });
+
+    // --- Quick POS Modal ---
+    const menuSelect = document.getElementById('quick-menu-select');
+    menuSelect.innerHTML = MENU_ITEMS.map(m => `
+      <option value="${m.id}" data-price="${m.price}">${m.name} — ${formatRupiah(m.price)}</option>
+    `).join('');
+
+    const updateCalc = () => {
+      const sel = menuSelect.selectedOptions[0];
+      const price = sel ? parseInt(sel.dataset.price, 10) : 9000;
+      const qty = parseInt(document.getElementById('quick-qty-input').value, 10) || 1;
+      document.getElementById('quick-calc-price').textContent = formatRupiah(price * qty);
+    };
+
+    menuSelect.addEventListener('change', updateCalc);
+    document.getElementById('quick-qty-input').addEventListener('input', updateCalc);
+    updateCalc();
+
+    document.getElementById('open-quick-pos-btn').addEventListener('click', () => {
+      document.getElementById('quick-pos-modal').classList.remove('hidden');
+    });
+    document.getElementById('close-quick-pos-btn').addEventListener('click', () => {
+      document.getElementById('quick-pos-modal').classList.add('hidden');
+    });
+
+    document.getElementById('quick-pos-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const sel = menuSelect.selectedOptions[0];
+      const name = sel.text.split(' — ')[0];
+      const price = parseInt(sel.dataset.price, 10);
+      const qty = parseInt(document.getElementById('quick-qty-input').value, 10) || 1;
+      const pay = document.getElementById('quick-pay-select').value;
+      const cust = document.getElementById('quick-cust-name').value.trim() || 'Pembeli Gerobak';
+
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      const sale = {
+        id: 'POS-' + Date.now().toString().slice(-6),
+        date: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
+        time: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
+        type: 'Kasir Gerobak',
+        customerName: cust,
+        items: [{ name: name, qty: qty, price: price * qty }],
+        totalQty: qty,
+        paymentMethod: pay,
+        total: price * qty
+      };
+
+      saveSale(sale);
+      document.getElementById('quick-pos-modal').classList.add('hidden');
+      document.getElementById('quick-cust-name').value = '';
+      document.getElementById('quick-qty-input').value = '1';
+      updateCalc();
+      showToast('Tersimpan!', `${qty}x ${name} (${formatRupiah(price * qty)}) dicatat.`, '✅');
+    });
+
+    // --- Receipt Modal ---
+    function openReceipt(id) {
+      const trx = getSalesRecords().find(t => t.id === id);
+      if (!trx) return;
+      activeReceiptTrx = trx;
+
+      document.getElementById('rcpt-id').textContent = trx.id;
+      document.getElementById('rcpt-time').textContent = `${trx.date} ${trx.time}`;
+      document.getElementById('rcpt-type').textContent = trx.type;
+      document.getElementById('rcpt-cust').textContent = trx.customerName;
+      document.getElementById('rcpt-payment').textContent = trx.paymentMethod;
+      document.getElementById('rcpt-total').textContent = formatRupiah(trx.total);
+
+      document.getElementById('rcpt-items-list').innerHTML = (trx.items || []).map(i => `
+        <div class="flex justify-between items-center text-[11px]">
+          <span>${i.qty}x ${i.name}</span>
+          <span class="font-bold">${formatRupiah(i.price)}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('receipt-modal').classList.remove('hidden');
+    }
+
+    document.getElementById('close-receipt-btn').addEventListener('click', () => {
+      document.getElementById('receipt-modal').classList.add('hidden');
+    });
+    document.getElementById('print-receipt-btn').addEventListener('click', () => window.print());
+    document.getElementById('share-receipt-btn').addEventListener('click', () => {
+      if (!activeReceiptTrx) return;
+      const t = activeReceiptTrx;
+      const lines = [
+        `*STRUK CANDY CREPES MBAK PIE* 🥞✨`,
+        `No: ${t.id} | ${t.date} ${t.time}`,
+        `Pemesan: ${t.customerName}`,
+        `---------------------------`,
+        ...(t.items || []).map(i => `${i.qty}x ${i.name} — ${formatRupiah(i.price)}`),
+        `---------------------------`,
+        `*TOTAL: ${formatRupiah(t.total)}* (${t.paymentMethod})`,
+        ``,
+        `Terima kasih! Jangan lupa bahagia 🙏`
+      ];
+      window.open(`https://wa.me/?text=${encodeURIComponent(lines.join('\n'))}`, '_blank');
+    });
+
+    // Run Auth on load
+    checkAuth();
+  </script>
+</body>
+</html>
