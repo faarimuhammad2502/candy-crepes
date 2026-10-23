@@ -71,6 +71,41 @@
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
+
+    /* Print Receipt Styling */
+    @media print {
+      body > * {
+        display: none !important;
+      }
+      #receipt-modal, #receipt-modal * {
+        display: block !important;
+        visibility: visible !important;
+      }
+      #receipt-modal {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        z-index: 999999 !important;
+      }
+      #receipt-modal .no-print {
+        display: none !important;
+      }
+      #receipt-print-area {
+        width: 100% !important;
+        max-width: 350px !important;
+        margin: 0 auto !important;
+        padding: 12px !important;
+        border: none !important;
+        box-shadow: none !important;
+        color: #000 !important;
+      }
+    }
+
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-purple-200 selection:text-purple-900 flex flex-col min-h-screen pb-16 sm:pb-0">
@@ -665,6 +700,10 @@
                 <div>
                   <h5 class="font-bold text-white">Lokasi Stand Gerobak:</h5>
                   <p class="text-purple-200 text-xs sm:text-sm">Stand Gerobak Ungu Candy Crepes Mbak Pie (Tepi Jalan Utama, akses mudah motor &amp; mobil)</p>
+                  <a href="https://www.google.com/maps/search/?api=1&query=Stand+Candy+Crepes+Mbak+Pie" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-3.5 py-2 mt-2 bg-brand-yellow hover:bg-amber-400 text-brand-darkPurple font-extrabold text-xs rounded-xl shadow transition">
+                    <span>📍</span>
+                    <span>Petunjuk Arah (Google Maps)</span>
+                  </a>
                 </div>
               </div>
               <div class="flex items-start gap-3">
@@ -706,15 +745,21 @@
   <!-- Testimonials & FAQ Section -->
   <section id="ulasan" class="py-14 bg-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-2xl mx-auto mb-10">
-        <span class="text-xs font-bold uppercase tracking-wider text-brand-purple bg-purple-100 px-3 py-1 rounded-full">
-          Testimoni Pelanggan
-        </span>
-        <h2 class="text-3xl font-display font-extrabold text-slate-900 mt-2">
-          Kata Mereka Tentang Candy Crepes
-        </h2>
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between max-w-7xl mx-auto mb-8 gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-purple bg-purple-100 px-3 py-1 rounded-full">
+            Testimoni Pelanggan
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-display font-extrabold text-slate-900 mt-2">
+            Kata Mereka Tentang Candy Crepes
+          </h2>
+        </div>
+        <button type="button" id="open-add-review-btn" class="px-4 py-2.5 bg-brand-purple hover:bg-brand-darkPurple text-white text-xs font-bold rounded-xl shadow transition flex items-center justify-center gap-2 shrink-0">
+          <span>✍️</span>
+          <span>+ Tulis Ulasan Kamu</span>
+        </button>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="reviews-container">
         <div class="bg-white p-6 rounded-3xl border border-purple-100 shadow-sm space-y-3">
           <div class="flex text-amber-400 text-sm">★★★★★</div>
           <p class="text-slate-600 text-sm italic">"Beneran renyah banget! Anak-anak suka banget varian Chococheese dan Choco Marshmallow-nya. Harganya ramah di kantong tapi rasa juara."</p>
@@ -1101,10 +1146,13 @@
         </div>
 
         <!-- Action Buttons in Header -->
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" id="toggle-stall-status-btn" class="px-3.5 py-2 rounded-xl font-extrabold text-xs sm:text-sm transition flex items-center gap-1.5 shadow">
+            <!-- Rendered dynamically via JS: BUKA / TUTUP -->
+          </button>
           <button type="button" id="open-quick-sale-btn" class="px-3.5 py-2 bg-brand-yellow hover:bg-amber-400 text-brand-darkPurple font-extrabold text-xs sm:text-sm rounded-xl shadow transition flex items-center gap-1.5">
             <span>➕</span>
-            <span>+ Catat Pesanan Gerobak</span>
+            <span>+ Catat Pesanan</span>
           </button>
           <button type="button" id="close-owner-dashboard-btn" class="w-9 h-9 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold flex items-center justify-center transition">
             ✕
@@ -1230,6 +1278,23 @@
 
         </div>
 
+        <!-- Menu Availability / Stock Manager -->
+        <div class="bg-white rounded-2xl border border-purple-100 shadow-sm p-4 sm:p-5 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-purple-100 pb-2.5">
+            <div>
+              <h3 class="font-display font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                <span>📦</span>
+                <span>Kelola Ketersediaan Menu (Tandai Habis / Ready)</span>
+              </h3>
+              <p class="text-xs text-slate-500">Klik varian untuk mengubah status: jika topping habis, menu otomatis nonaktif di web</p>
+            </div>
+            <span class="text-[11px] text-purple-700 bg-purple-50 px-2.5 py-1 rounded-lg font-semibold">14 Varian Resmi</span>
+          </div>
+          <div id="owner-menu-stock-list" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 pt-1 max-h-48 overflow-y-auto">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
         <!-- Transaction Log Table -->
         <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden space-y-3 p-4 sm:p-5">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-3">
@@ -1333,6 +1398,125 @@
         <button type="submit" class="w-full py-3.5 bg-brand-purple hover:bg-brand-darkPurple text-white font-display font-bold text-sm rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2">
           <span>💾</span>
           <span>Simpan ke Laporan Penjualan</span>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+
+  <!-- ==================== RECEIPT PRINT MODAL (58mm/80mm THERMAL COMPATIBLE) ==================== -->
+  <div id="receipt-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[70] hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full shadow-2xl border border-purple-100 p-5 space-y-4">
+      
+      <div class="flex items-center justify-between border-b border-slate-100 pb-2 no-print">
+        <h4 class="font-display font-bold text-slate-900 text-sm">🖨️ Struk Transaksi Digital</h4>
+        <button type="button" id="close-receipt-btn" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg">✕</button>
+      </div>
+
+      <!-- Printable Area -->
+      <div id="receipt-print-area" class="bg-slate-50 p-4 rounded-2xl border border-dashed border-slate-300 font-mono text-xs text-slate-800 space-y-3">
+        <div class="text-center space-y-0.5 border-b border-dashed border-slate-300 pb-2.5">
+          <h3 class="font-bold text-sm text-slate-900 uppercase tracking-wider">CANDY CREPES</h3>
+          <p class="text-[11px] text-slate-600">Gerobak Crepes Crispy Mbak Pie</p>
+          <p class="text-[10px] text-slate-500">WA: +62 857-3174-5854</p>
+        </div>
+
+        <div class="text-[11px] space-y-0.5 text-slate-600 border-b border-dashed border-slate-300 pb-2">
+          <div class="flex justify-between">
+            <span>No. Trx:</span>
+            <span id="rcpt-id" class="font-bold text-slate-800">TRX-000000</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Waktu:</span>
+            <span id="rcpt-time">23/10/2026 15:30</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Kasir / Tipe:</span>
+            <span id="rcpt-type">Kasir Gerobak</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Pelanggan:</span>
+            <span id="rcpt-cust">Umum</span>
+          </div>
+        </div>
+
+        <!-- Items list -->
+        <div id="rcpt-items-list" class="space-y-1.5 border-b border-dashed border-slate-300 pb-2.5">
+          <!-- Populated via JS -->
+        </div>
+
+        <!-- Totals -->
+        <div class="space-y-1 text-xs pt-1">
+          <div class="flex justify-between font-bold text-slate-900 text-sm">
+            <span>TOTAL:</span>
+            <span id="rcpt-total">Rp 0</span>
+          </div>
+          <div class="flex justify-between text-[11px] text-slate-600">
+            <span>Metode Bayar:</span>
+            <span id="rcpt-payment" class="font-bold">Tunai</span>
+          </div>
+        </div>
+
+        <div class="text-center text-[10px] text-slate-500 pt-2 border-t border-dashed border-slate-300 space-y-0.5">
+          <p>Terima kasih sudah jajan! 🙏</p>
+          <p class="font-semibold text-purple-700">"happy with • crepes!" 🥞✨</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons in modal -->
+      <div class="grid grid-cols-2 gap-2 pt-1 no-print">
+        <button type="button" id="print-receipt-btn" class="py-2.5 bg-brand-purple hover:bg-brand-darkPurple text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
+          <span>🖨️</span>
+          <span>Cetak / Print</span>
+        </button>
+        <button type="button" id="share-receipt-wa-btn" class="py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
+          <span>📲</span>
+          <span>Kirim ke WA</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== ADD REVIEW MODAL ==================== -->
+  <div id="add-review-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-purple-100 p-6 space-y-4">
+      
+      <div class="flex items-center justify-between border-b border-purple-100 pb-3">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-brand-purple">Ulasan Pengunjung</span>
+          <h3 class="font-display font-bold text-xl text-slate-900">Bagikan Pengalaman Jajanmu!</h3>
+        </div>
+        <button type="button" id="close-review-modal-btn" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl">✕</button>
+      </div>
+
+      <form id="add-review-form" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Nama Kamu *</label>
+          <input type="text" id="review-name" required placeholder="Contoh: Sarah / Kak Aldi" class="w-full text-xs sm:text-sm p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-purple focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Rating Kepuasan *</label>
+          <div class="flex items-center gap-2" id="star-rating-selector">
+            <button type="button" data-star="1" class="star-btn text-2xl text-amber-400">★</button>
+            <button type="button" data-star="2" class="star-btn text-2xl text-amber-400">★</button>
+            <button type="button" data-star="3" class="star-btn text-2xl text-amber-400">★</button>
+            <button type="button" data-star="4" class="star-btn text-2xl text-amber-400">★</button>
+            <button type="button" data-star="5" class="star-btn text-2xl text-amber-400">★</button>
+            <input type="hidden" id="review-stars-val" value="5">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Kesan &amp; Rasa Crepes *</label>
+          <textarea id="review-comment" required rows="3" placeholder="Contoh: Chococheese-nya juara, renyah banget dan cokelatnya beneran lumer!" class="w-full text-xs sm:text-sm p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-purple focus:outline-none"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 bg-brand-purple hover:bg-brand-darkPurple text-white font-display font-bold text-sm rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2">
+          <span>✨</span>
+          <span>Kirim Ulasan</span>
         </button>
       </form>
 
@@ -1752,15 +1936,20 @@
       }
 
       emptyState.classList.add('hidden');
+      const soldOutIds = getSoldOutMenuIds();
+
       grid.innerHTML = filtered.map(item => {
         const isFav = favorites.includes(item.id);
+        const isSoldOut = soldOutIds.includes(item.id);
+
         return `
-          <div class="bg-white rounded-3xl border border-purple-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden group">
+          <div class="bg-white rounded-3xl border border-purple-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden group ${isSoldOut ? 'opacity-70' : ''}">
             <div class="relative h-44 bg-purple-100 overflow-hidden">
-              <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${isSoldOut ? 'grayscale' : ''}">
               <div class="absolute top-3 left-3 bg-brand-yellow text-brand-darkPurple text-[11px] font-extrabold px-2.5 py-1 rounded-xl shadow">
                 ${item.badge}
               </div>
+              ${isSoldOut ? '<div class="absolute inset-0 bg-slate-900/40 backdrop-blur-[1px] flex items-center justify-center"><span class="bg-rose-600 text-white font-extrabold text-xs px-3 py-1.5 rounded-xl shadow-lg">HABIS HARI INI</span></div>' : ''}
               <button type="button" data-fav-id="${item.id}" class="toggle-fav-btn absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 hover:bg-white shadow flex items-center justify-center transition" title="Simpan ke Favorit">
                 <span class="${isFav ? 'text-rose-500' : 'text-slate-300'} text-sm">❤</span>
               </button>
@@ -1776,12 +1965,18 @@
                   <span class="font-display font-extrabold text-lg text-brand-purple">${formatRupiah(item.price)}</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                  <button type="button" data-quick-id="${item.id}" class="quick-add-btn px-2.5 py-2 bg-purple-100 hover:bg-purple-200 text-brand-purple font-extrabold text-xs rounded-xl transition" title="Tambah Cepat 1 Porsi">
-                    +1 Cepat
-                  </button>
-                  <button type="button" data-modal-id="${item.id}" class="open-item-modal-btn px-3 py-2 bg-brand-purple hover:bg-brand-darkPurple text-white font-bold text-xs rounded-xl shadow-sm transition">
-                    Kustom
-                  </button>
+                  ${isSoldOut ? `
+                    <span class="text-xs font-bold text-rose-500 bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-200">
+                      Habis
+                    </span>
+                  ` : `
+                    <button type="button" data-quick-id="${item.id}" class="quick-add-btn px-2.5 py-2 bg-purple-100 hover:bg-purple-200 text-brand-purple font-extrabold text-xs rounded-xl transition" title="Tambah Cepat 1 Porsi">
+                      +1 Cepat
+                    </button>
+                    <button type="button" data-modal-id="${item.id}" class="open-item-modal-btn px-3 py-2 bg-brand-purple hover:bg-brand-darkPurple text-white font-bold text-xs rounded-xl shadow-sm transition">
+                      Kustom
+                    </button>
+                  `}
                 </div>
               </div>
             </div>
@@ -2592,7 +2787,10 @@
                 <td class="py-2.5 px-3 text-right font-display font-bold text-brand-purple whitespace-nowrap">
                   ${formatRupiah(t.total || 0)}
                 </td>
-                <td class="py-2.5 px-3 text-center">
+                <td class="py-2.5 px-3 text-center whitespace-nowrap">
+                  <button type="button" class="print-trx-btn px-2 py-1 bg-purple-100 hover:bg-purple-200 text-brand-purple rounded-lg font-bold text-[11px] transition mr-1" data-id="${t.id}" title="Cetak Struk Transaksi">
+                    🖨️ Struk
+                  </button>
                   <button type="button" class="del-trx-btn text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1 rounded transition" data-id="${t.id}" title="Hapus transaksi">
                     🗑️
                   </button>
@@ -2609,6 +2807,189 @@
           });
         }
       }
+    }
+
+
+    // ==========================================================
+    // --- STALL STATUS, MENU STOCK, RECEIPTS & REVIEWS LOGIC ---
+    // ==========================================================
+    const STALL_STATUS_KEY = 'candy_stall_status_v1';
+    const MENU_SOLDOUT_KEY = 'candy_soldout_menu_v1';
+    const REVIEWS_STORAGE_KEY = 'candy_reviews_v1';
+
+    // 1. Stall Open / Closed Status
+    function getStallStatus() {
+      return localStorage.getItem(STALL_STATUS_KEY) || 'open';
+    }
+
+    function setStallStatus(status) {
+      localStorage.setItem(STALL_STATUS_KEY, status);
+      updateStallStatusUI();
+    }
+
+    function updateStallStatusUI() {
+      const status = getStallStatus();
+      const dot = document.getElementById('live-status-dot');
+      const text = document.getElementById('live-status-text');
+      const heroBadge = document.getElementById('hero-open-badge');
+      const toggleBtn = document.getElementById('toggle-stall-status-btn');
+
+      if (status === 'open') {
+        if (dot) dot.className = 'inline-flex items-center justify-center w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping';
+        if (text) text.textContent = 'Gerobak Buka Setiap Hari (15.00 - 22.00 WIB)';
+        if (heroBadge) {
+          heroBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>Fresh Dipanggang Dadakan</span>';
+          heroBadge.className = 'inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-full text-xs font-bold';
+        }
+        if (toggleBtn) {
+          toggleBtn.innerHTML = '<span>🟢</span><span>Status: BUKA (Klik utk Tutup)</span>';
+          toggleBtn.className = 'px-3.5 py-2 rounded-xl font-extrabold text-xs sm:text-sm bg-emerald-100 text-emerald-900 border border-emerald-300 hover:bg-emerald-200 transition shadow-sm';
+        }
+      } else {
+        if (dot) dot.className = 'inline-flex items-center justify-center w-2.5 h-2.5 bg-rose-500 rounded-full';
+        if (text) text.textContent = '🔴 Gerobak Sedang Tutup / Habis Terjual Hari Ini';
+        if (heroBadge) {
+          heroBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span><span>Gerobak Sedang Tutup</span>';
+          heroBadge.className = 'inline-flex items-center gap-1.5 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-full text-xs font-bold';
+        }
+        if (toggleBtn) {
+          toggleBtn.innerHTML = '<span>🔴</span><span>Status: TUTUP (Klik utk Buka)</span>';
+          toggleBtn.className = 'px-3.5 py-2 rounded-xl font-extrabold text-xs sm:text-sm bg-rose-100 text-rose-900 border border-rose-300 hover:bg-rose-200 transition shadow-sm';
+        }
+      }
+    }
+
+    // 2. Menu Sold-Out Manager
+    function getSoldOutMenuIds() {
+      try {
+        const raw = localStorage.getItem(MENU_SOLDOUT_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function toggleMenuSoldOut(id) {
+      let ids = getSoldOutMenuIds();
+      if (ids.includes(id)) {
+        ids = ids.filter(x => x !== id);
+        showToast('Menu Ready Kembali!', 'Status menu telah diaktifkan kembali.', '✅');
+      } else {
+        ids.push(id);
+        showToast('Menu Ditandai Habis', 'Menu dinonaktifkan sementara di katalog.', '⚠️');
+      }
+      localStorage.setItem(MENU_SOLDOUT_KEY, JSON.stringify(ids));
+      renderMenu();
+      renderOwnerMenuStockManager();
+    }
+
+    function renderOwnerMenuStockManager() {
+      const container = document.getElementById('owner-menu-stock-list');
+      if (!container) return;
+      const soldOutIds = getSoldOutMenuIds();
+
+      container.innerHTML = MENU_ITEMS.map(item => {
+        const isSoldOut = soldOutIds.includes(item.id);
+        return `
+          <div class="p-2.5 rounded-xl border flex items-center justify-between gap-1.5 ${isSoldOut ? 'bg-rose-50 border-rose-200' : 'bg-slate-50 border-slate-200'}">
+            <div class="truncate">
+              <span class="font-bold text-xs block truncate ${isSoldOut ? 'text-rose-900 line-through' : 'text-slate-800'}">${item.name}</span>
+              <span class="text-[10px] text-slate-500">${formatRupiah(item.price)}</span>
+            </div>
+            <button type="button" class="stock-toggle-btn shrink-0 px-2 py-1 rounded text-[10px] font-extrabold transition ${isSoldOut ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'}" data-menu-id="${item.id}">
+              ${isSoldOut ? 'HABIS' : 'READY'}
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.stock-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          toggleMenuSoldOut(btn.dataset.menuId);
+        });
+      });
+    }
+
+    // 3. Receipt Modal & Print Function
+    let activeReceiptTrx = null;
+
+    function openReceiptModal(trxId) {
+      const all = getAllSalesRecords();
+      const trx = all.find(t => t.id === trxId);
+      if (!trx) return;
+      activeReceiptTrx = trx;
+
+      document.getElementById('rcpt-id').textContent = trx.id || 'TRX-000000';
+      document.getElementById('rcpt-time').textContent = `${trx.date || ''} ${trx.time || ''}`;
+      document.getElementById('rcpt-type').textContent = trx.type || 'Kasir Gerobak';
+      document.getElementById('rcpt-cust').textContent = trx.customerName || 'Pelanggan Umum';
+      document.getElementById('rcpt-payment').textContent = trx.paymentMethod || 'Tunai';
+      document.getElementById('rcpt-total').textContent = formatRupiah(trx.total || 0);
+
+      const itemsContainer = document.getElementById('rcpt-items-list');
+      itemsContainer.innerHTML = (trx.items || []).map(i => `
+        <div class="flex justify-between items-center text-[11px]">
+          <span>${i.qty}x ${i.name}</span>
+          <span class="font-bold">${formatRupiah(i.price)}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('receipt-modal').classList.remove('hidden');
+    }
+
+    // 4. Customer Reviews Manager
+    function getCustomerReviews() {
+      const defaultReviews = [
+        {
+          name: 'Rina Anggraini',
+          role: 'Pelanggan Setia',
+          stars: 5,
+          comment: 'Beneran renyah banget! Anak-anak suka banget varian Chococheese dan Choco Marshmallow-nya. Harganya ramah di kantong tapi rasa juara.'
+        },
+        {
+          name: 'Dimas Wijaya',
+          role: 'Mahasiswa',
+          stars: 5,
+          comment: 'Kulit crepesnya gak gampang mlempem biarpun dibawa pulang. Topping Double Cheese dan Choco Almond-nya melimpah banget!'
+        },
+        {
+          name: 'Siti Nurhaliza',
+          role: 'Pecinta Kuliner',
+          stars: 5,
+          comment: 'Sekarang enak banget bisa pilih menu dan racik topping dari web dulu lalu kirim ke WA Mbak Pie, pas nyampe gerobak tinggal ambil!'
+        }
+      ];
+
+      try {
+        const raw = localStorage.getItem(REVIEWS_STORAGE_KEY);
+        if (!raw) {
+          localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(defaultReviews));
+          return defaultReviews;
+        }
+        return JSON.parse(raw) || defaultReviews;
+      } catch (e) {
+        return defaultReviews;
+      }
+    }
+
+    function renderCustomerReviews() {
+      const container = document.getElementById('reviews-container');
+      if (!container) return;
+      const reviews = getCustomerReviews();
+
+      container.innerHTML = reviews.map(r => `
+        <div class="bg-white p-6 rounded-3xl border border-purple-100 shadow-sm space-y-3 flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex text-amber-400 text-sm">
+              ${'★'.repeat(r.stars || 5)}${'☆'.repeat(5 - (r.stars || 5))}
+            </div>
+            <p class="text-slate-600 text-sm italic leading-relaxed">"${r.comment}"</p>
+          </div>
+          <div class="text-xs font-bold text-slate-800 pt-2 border-t border-slate-100">
+            ${r.name} ${r.role ? `— <span class="font-normal text-slate-500">${r.role}</span>` : ''}
+          </div>
+        </div>
+      `).join('');
     }
 
     function exportSalesToWhatsApp() {
@@ -2755,6 +3136,7 @@
           `*No. WA:* ${wa}`,
           `*Pengambilan:* ${orderType}`,
           address ? `*Alamat:* ${address}` : null,
+          `*Jam Pengambilan:* ${document.getElementById('cust-pickup-time')?.value || 'Sekarang juga'}`,
           `*Pembayaran:* ${payment}`,
           ``,
           `*Daftar Pesanan:*`
@@ -2840,6 +3222,105 @@
           showToast('Data Demo Dibersihkan!', 'Laporan penjualan kini bersih (0 transaksi) & siap dipakai pertama kali.', '🧹');
         }
       });
+
+      // Initialize Stall Status & Stock
+      updateStallStatusUI();
+      document.getElementById('toggle-stall-status-btn')?.addEventListener('click', () => {
+        const current = getStallStatus();
+        const next = current === 'open' ? 'closed' : 'open';
+        setStallStatus(next);
+        showToast(
+          next === 'open' ? 'Gerobak DIBUKA' : 'Gerobak DITUTUP',
+          next === 'open' ? 'Status toko kini menerima pesanan di website.' : 'Status toko kini ditandai tutup / habis terjual.',
+          next === 'open' ? '🟢' : '🔴'
+        );
+      });
+
+      renderOwnerMenuStockManager();
+
+      // Receipt Listeners
+      document.getElementById('close-receipt-btn')?.addEventListener('click', () => {
+        document.getElementById('receipt-modal').classList.add('hidden');
+      });
+
+      document.getElementById('print-receipt-btn')?.addEventListener('click', () => {
+        window.print();
+      });
+
+      document.getElementById('share-receipt-wa-btn')?.addEventListener('click', () => {
+        if (!activeReceiptTrx) return;
+        const trx = activeReceiptTrx;
+        const lines = [
+          `*STRUK PEMBELIAN CANDY CREPES* 🥞✨`,
+          `No. Trx: ${trx.id}`,
+          `Waktu: ${trx.date} ${trx.time}`,
+          `Pelanggan: ${trx.customerName}`,
+          `---------------------------`,
+          ...(trx.items || []).map(i => `${i.qty}x ${i.name} — ${formatRupiah(i.price)}`),
+          `---------------------------`,
+          `*TOTAL: ${formatRupiah(trx.total)}* (${trx.paymentMethod})`,
+          ``,
+          `Terima kasih sudah jajan di Candy Crepes Mbak Pie! 🙏`
+        ];
+        const url = `https://wa.me/?text=${encodeURIComponent(lines.join('\n'))}`;
+        window.open(url, '_blank', 'noopener,noreferrer');
+      });
+
+      // Reviews Listeners
+      renderCustomerReviews();
+      document.getElementById('open-add-review-btn')?.addEventListener('click', () => {
+        document.getElementById('add-review-modal').classList.remove('hidden');
+      });
+      document.getElementById('close-review-modal-btn')?.addEventListener('click', () => {
+        document.getElementById('add-review-modal').classList.add('hidden');
+      });
+
+      // Star selector
+      const starBtns = document.querySelectorAll('#star-rating-selector .star-btn');
+      starBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const rating = parseInt(btn.dataset.star, 10);
+          document.getElementById('review-stars-val').value = rating;
+          starBtns.forEach(b => {
+            const starVal = parseInt(b.dataset.star, 10);
+            b.className = starVal <= rating ? 'star-btn text-2xl text-amber-400' : 'star-btn text-2xl text-slate-300';
+          });
+        });
+      });
+
+      document.getElementById('add-review-form')?.addEventListener('submit', e => {
+        e.preventDefault();
+        const name = document.getElementById('review-name').value.trim();
+        const stars = parseInt(document.getElementById('review-stars-val').value, 10) || 5;
+        const comment = document.getElementById('review-comment').value.trim();
+
+        const reviews = getCustomerReviews();
+        reviews.unshift({
+          name: name,
+          role: 'Pelanggan Terverifikasi',
+          stars: stars,
+          comment: comment
+        });
+
+        localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(reviews));
+        renderCustomerReviews();
+        document.getElementById('add-review-modal').classList.add('hidden');
+        document.getElementById('review-name').value = '';
+        document.getElementById('review-comment').value = '';
+        showToast('Ulasan Terkirim!', 'Terima kasih atas ulasan dan apresiasimu untuk Mbak Pie!', '💖');
+      });
+
+      // Re-bind print buttons in table on dashboard render
+      const originalRenderSalesDashboard = renderSalesDashboard;
+      renderSalesDashboard = function() {
+        originalRenderSalesDashboard();
+        renderOwnerMenuStockManager();
+        document.querySelectorAll('.print-trx-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            openReceiptModal(btn.dataset.id);
+          });
+        });
+      };
 
       // Export Buttons
       document.getElementById('export-wa-report-btn')?.addEventListener('click', exportSalesToWhatsApp);
