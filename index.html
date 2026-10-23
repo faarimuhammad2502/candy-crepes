@@ -120,11 +120,8 @@
         <span class="hidden md:inline text-amber-300 font-semibold">🎟️ Kode Promo: <button type="button" id="top-copy-promo-btn" class="underline hover:text-white">HAPPYCREPES</button> (Diskon Rp 2.000)</span>
       </div>
       <div class="flex items-center gap-3 text-xs font-semibold">
-        <button type="button" id="open-owner-dashboard-btn" class="bg-amber-400 hover:bg-amber-300 text-brand-darkPurple font-extrabold px-3 py-1 rounded-lg transition flex items-center gap-1.5 shadow-sm text-xs">
-          <span>📊</span>
-          <span>Laporan Penjualan (Owner)</span>
-        </button>
-        <a href="#lokasi" class="underline hover:text-amber-200 transition hidden sm:inline">Lokasi Gerobak</a>
+        <a href="#lokasi" class="underline hover:text-amber-200 transition">📍 Lokasi Gerobak</a>
+        <a href="#menu" class="hidden sm:inline bg-white/15 hover:bg-white/25 text-amber-300 px-2.5 py-1 rounded-lg transition">Lihat Menu</a>
       </div>
     </div>
   </div>
@@ -165,10 +162,6 @@
         </a>
         <a href="#gerobak" class="hover:text-brand-purple transition-colors py-1">Cerita Gerobak</a>
         <a href="#lokasi" class="hover:text-brand-purple transition-colors py-1">Lokasi</a>
-        <button type="button" id="nav-owner-btn" class="hover:bg-amber-200 bg-amber-100 text-brand-darkPurple border border-amber-300 px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 text-xs font-bold shadow-sm">
-          <span>📊</span>
-          <span>Laporan Owner</span>
-        </button>
       </nav>
 
       <!-- Action Buttons -->
@@ -206,10 +199,6 @@
       <a href="#builder" class="block px-3 py-2 rounded-lg hover:bg-purple-50 hover:text-brand-purple">🎨 Kustom Crepes Sendiri (DIY)</a>
       <a href="#gerobak" class="block px-3 py-2 rounded-lg hover:bg-purple-50 hover:text-brand-purple">🥞 Cerita Gerobak Mbak Pie</a>
       <a href="#lokasi" class="block px-3 py-2 rounded-lg hover:bg-purple-50 hover:text-brand-purple">📍 Lokasi & Jam Operasional</a>
-      <button type="button" id="mobile-owner-btn" class="w-full text-left px-3 py-2.5 rounded-xl bg-amber-300 text-brand-darkPurple font-bold hover:bg-amber-400 flex items-center gap-2 mt-2">
-        <span>📊</span>
-        <span>Laporan Penjualan &amp; Kasir (Owner)</span>
-      </button>
     </div>
   </header>
 
@@ -793,10 +782,12 @@
       <div class="text-xs text-slate-500 text-center sm:text-right">
         <p>© 2026 Candy Crepes Mbak Pie. Renyah, Lumer &amp; Bikin Happy! Pemesanan Online Dadakan.</p>
         <p class="text-slate-400 mt-1">📞 WhatsApp Pemesanan: <a href="https://wa.me/6285731745854" class="text-amber-300 font-bold hover:underline">+62 857-3174-5854</a></p>
-        <button type="button" id="footer-owner-btn" class="mt-2 text-xs text-amber-300 hover:text-amber-200 underline font-semibold inline-flex items-center gap-1">
-          <span>📊</span>
-          <span>Portal Laporan Penjualan Owner (Pengganti Kertas)</span>
-        </button>
+        <div class="mt-3 pt-2 border-t border-slate-800">
+          <button type="button" id="footer-owner-btn" class="text-[11px] text-slate-500 hover:text-slate-300 transition inline-flex items-center gap-1">
+            <span>🔒</span>
+            <span>Akses Khusus Penjual</span>
+          </button>
+        </div>
       </div>
     </div>
   </footer>
@@ -1124,6 +1115,39 @@
   <canvas id="favicon-canvas" width="180" height="180" class="hidden"></canvas>
 
 
+
+  <!-- ==================== OWNER SECURITY PIN AUTH MODAL ==================== -->
+  <div id="owner-pin-modal" class="fixed inset-0 bg-slate-900/85 backdrop-blur-md z-[80] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full shadow-2xl border border-purple-200 p-6 text-center space-y-4">
+      <div class="w-14 h-14 mx-auto rounded-2xl bg-purple-100 text-brand-purple flex items-center justify-center text-2xl shadow-inner">
+        🔒
+      </div>
+      <div>
+        <h3 class="font-display font-bold text-xl text-slate-900">Akses Khusus Penjual</h3>
+        <p class="text-xs text-slate-500 mt-1">
+          Masukkan PIN Keamanan untuk membuka laporan penjualan &amp; kasir gerobak Mbak Pie.
+        </p>
+      </div>
+
+      <form id="owner-pin-form" class="space-y-3.5">
+        <div>
+          <input type="password" id="owner-pin-input" maxlength="8" placeholder="Masukkan PIN (Default: 1234)" required class="w-full text-center text-lg tracking-widest font-mono font-bold p-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-brand-purple focus:outline-none">
+          <p id="owner-pin-error" class="text-xs text-rose-600 font-semibold mt-1 hidden">⚠️ PIN salah! Akses ditolak.</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" id="close-pin-modal-btn" class="py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
+            Batal
+          </button>
+          <button type="submit" class="py-2.5 bg-brand-purple hover:bg-brand-darkPurple text-white font-bold text-xs rounded-xl shadow transition">
+            Masuk Panel
+          </button>
+        </div>
+      </form>
+      <p class="text-[10px] text-slate-400">Hanya penjual/owner yang memiliki akses ke data omzet ini.</p>
+    </div>
+  </div>
+
   <!-- ==================== OWNER SALES REPORTING & POS MODAL ==================== -->
   <div id="owner-dashboard-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5">
     <div class="bg-white rounded-3xl max-w-5xl w-full max-h-[94vh] flex flex-col shadow-2xl border border-purple-200 overflow-hidden">
@@ -1338,10 +1362,17 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="p-4 bg-slate-100 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
-        <div>
-          <span>Database Lokal Gerobak: </span>
-          <span class="font-bold text-slate-700" id="sales-db-status">Tersimpan Aman di Browser</span>
+      <div class="p-4 bg-slate-100 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
+        <div class="flex items-center gap-3">
+          <button type="button" id="change-pin-btn" class="text-purple-700 hover:underline font-semibold flex items-center gap-1">
+            <span>🔑</span>
+            <span>Ubah PIN</span>
+          </button>
+          <span>•</span>
+          <button type="button" id="lock-owner-session-btn" class="text-rose-600 hover:underline font-semibold flex items-center gap-1">
+            <span>🔒</span>
+            <span>Kunci &amp; Keluar</span>
+          </button>
         </div>
         <button type="button" id="close-owner-footer-btn" class="px-5 py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-xl transition">
           Tutup Panel Laporan
@@ -3181,19 +3212,76 @@
         showToast('Pesanan Masuk & Dicatat!', 'Membuka WhatsApp dan mencatat pesanan ke laporan penjualan owner.', '🚀');
       });
 
-      // Owner Dashboard Listeners
-      const openOwnerModal = () => {
-        renderSalesDashboard();
-        document.getElementById('owner-dashboard-modal').classList.remove('hidden');
+      // Security PIN & Authentication for Seller Access
+      const OWNER_PIN_KEY = 'candy_owner_pin_code';
+      const getOwnerPIN = () => localStorage.getItem(OWNER_PIN_KEY) || '1234';
+      const isOwnerAuthenticated = () => sessionStorage.getItem('candy_owner_auth') === 'true';
+
+      const showOwnerAuthModal = () => {
+        if (isOwnerAuthenticated()) {
+          renderSalesDashboard();
+          document.getElementById('owner-dashboard-modal').classList.remove('hidden');
+          return;
+        }
+        document.getElementById('owner-pin-input').value = '';
+        document.getElementById('owner-pin-error').classList.add('hidden');
+        document.getElementById('owner-pin-modal').classList.remove('hidden');
+        setTimeout(() => document.getElementById('owner-pin-input')?.focus(), 200);
       };
+
       const closeOwnerModal = () => {
         document.getElementById('owner-dashboard-modal').classList.add('hidden');
       };
 
-      document.getElementById('open-owner-dashboard-btn')?.addEventListener('click', openOwnerModal);
-      document.getElementById('nav-owner-btn')?.addEventListener('click', openOwnerModal);
-      document.getElementById('mobile-owner-btn')?.addEventListener('click', openOwnerModal);
-      document.getElementById('footer-owner-btn')?.addEventListener('click', openOwnerModal);
+      // Secret entry: Footer link & Hash URL (#owner / #laporan)
+      document.getElementById('footer-owner-btn')?.addEventListener('click', showOwnerAuthModal);
+      if (window.location.hash === '#owner' || window.location.hash === '#laporan') {
+        showOwnerAuthModal();
+      }
+      window.addEventListener('hashchange', () => {
+        if (window.location.hash === '#owner' || window.location.hash === '#laporan') {
+          showOwnerAuthModal();
+        }
+      });
+
+      // PIN Form Submit
+      document.getElementById('owner-pin-form')?.addEventListener('submit', e => {
+        e.preventDefault();
+        const entered = document.getElementById('owner-pin-input').value.trim();
+        const validPin = getOwnerPIN();
+
+        if (entered === validPin) {
+          sessionStorage.setItem('candy_owner_auth', 'true');
+          document.getElementById('owner-pin-modal').classList.add('hidden');
+          renderSalesDashboard();
+          document.getElementById('owner-dashboard-modal').classList.remove('hidden');
+          showToast('Akses Diberikan', 'Selamat datang di Panel Laporan Penjualan Mbak Pie.', '👑');
+        } else {
+          document.getElementById('owner-pin-error').classList.remove('hidden');
+        }
+      });
+
+      document.getElementById('close-pin-modal-btn')?.addEventListener('click', () => {
+        document.getElementById('owner-pin-modal').classList.add('hidden');
+      });
+
+      // Lock / Logout session
+      document.getElementById('lock-owner-session-btn')?.addEventListener('click', () => {
+        sessionStorage.removeItem('candy_owner_auth');
+        closeOwnerModal();
+        showToast('Panel Dikunci', 'Akses laporan penjualan telah dikunci kembali.', '🔒');
+      });
+
+      // Change PIN
+      document.getElementById('change-pin-btn')?.addEventListener('click', () => {
+        const newPin = prompt('Masukkan PIN Keamanan Baru (angka 4-8 digit):', getOwnerPIN());
+        if (newPin && newPin.trim().length >= 4) {
+          localStorage.setItem(OWNER_PIN_KEY, newPin.trim());
+          showToast('PIN Diperbarui!', `PIN baru Anda telah disimpan: ${newPin.trim()}`, '🔑');
+        } else if (newPin !== null) {
+          alert('PIN minimal harus 4 digit.');
+        }
+      });
       document.getElementById('close-owner-dashboard-btn')?.addEventListener('click', closeOwnerModal);
       document.getElementById('close-owner-footer-btn')?.addEventListener('click', closeOwnerModal);
 
